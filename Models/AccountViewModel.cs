@@ -10,7 +10,7 @@ namespace FSMS_asp.net.Models
         //Edit personal information
         [Required(ErrorMessage = "Please enter your name.")]
         [Display(Name = "Name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [DataType(DataType.Date)]
         public DateTime? DateOfBirth { get; set; }
@@ -18,7 +18,7 @@ namespace FSMS_asp.net.Models
         [Required(ErrorMessage = "Please enter your address.")]
         [Display(Name = "Address")]
         [DataType(DataType.MultilineText)]
-        public string Address { get; set; }
+        public string? Address { get; set; }
 
         [Display(Name = "Phone Number")]
         [DataType(DataType.PhoneNumber)]
@@ -26,14 +26,14 @@ namespace FSMS_asp.net.Models
 
         //reset password
         [Required, DataType(DataType.Password), Display(Name = "Current Password")]
-        public string CurrentPassword { get; set; }
+        public string? CurrentPassword { get; set; }
 
         [Required, DataType(DataType.Password), Display(Name = "New Password")]
-        public string NewPassword { get; set; }
+        public string? NewPassword { get; set; }
 
         [Required, DataType(DataType.Password), Display(Name = "Confirm New Password")]
         [Compare("NewPassword", ErrorMessage = "Confirm new password does not match.")]
-        public string ConfirmPassword { get; set; }
+        public string? ConfirmPassword { get; set; }
 
     }
 }

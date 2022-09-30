@@ -28,8 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="EmailTemplate\" />
-    <Folder Include="Models\Account\" />
     <Folder Include="Models\Customers\" />
     <Folder Include="Models\Email\" />
     <Folder Include="Models\Invoices\" />

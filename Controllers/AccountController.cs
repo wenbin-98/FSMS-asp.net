@@ -1,6 +1,7 @@
 ﻿using FSMS_asp.net.Models;
+using FSMS_asp.net.Models.Account;
 using FSMS_asp.net.Repository;
-using Microsoft.AspNetCore.Authorization;
+using FSMS_asp.net.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,54 +11,62 @@ namespace FSMS_asp.net.Controllers
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IAccountRepository _accountRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserService _userService;
 
-        public AccountController(SignInManager<ApplicationUser> signInManager, IAccountRepository accountRepository)
+        public AccountController(SignInManager<ApplicationUser> signInManager, IAccountRepository accountRepository, UserManager<ApplicationUser> userManager, IUserService userService)
         {
             _signInManager = signInManager;
             _accountRepository = accountRepository;
+            _userManager = userManager;
+            _userService = userService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
-        }
-
-        [Route("login")]
-        public IActionResult Login()
-        {
-            return View();
-        }
-
-        [Route("login")]
-        [HttpPost]
-        public async Task<IActionResult> Login(LoginModel model, string returnUrl)
-        {
-            if (ModelState.IsValid)
+            var userId = _userService.GetUserId();
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
             {
-                var result = await _accountRepository.PasswordSignInAsync(model);
-                if (result.Succeeded)
-                {
-                    if (!string.IsNullOrEmpty(returnUrl))
-                    {
-                        return LocalRedirect(returnUrl);
-                    }
-                    return RedirectToAction("Index", "Home");
-                }
-                if (result.IsNotAllowed)
-                {
-                    ModelState.AddModelError("", "Invalid credentials.");
-                }
-                else if (result.IsLockedOut)
-                {
-                    ModelState.AddModelError("", "Account is blocked, Try after some time.");
-                }
+                return NotFound();
             }
-            return View(model);
+            else
+            {
+
+                AccountIndexViewModel model = new AccountIndexViewModel()
+                {
+                    ChangePasswordModel = new ChangePasswordModel(),
+                    EditInformationModel = new EditInformationModel()
+                    {
+                        Name = user.Name,
+                        DateOfBirth = user.DateOfBirth,
+                        Address = user.Address,
+                        PhoneNumber = user.PhoneNumber
+                    }
+                };
+
+                return View("~/Views/Account/Index.cshtml", model);
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
         {
+            var userId = _userService.GetUserId();
+            var user = await _userManager.FindByIdAsync(userId);
+
+            AccountIndexViewModel accountIndexViewModel = new AccountIndexViewModel()
+            {
+                ChangePasswordModel = new ChangePasswordModel(),
+                EditInformationModel = new EditInformationModel()
+                {
+                    Name = user.Name,
+                    DateOfBirth = user.DateOfBirth,
+                    Address = user.Address,
+                    PhoneNumber = user.PhoneNumber
+                }
+            };
+
             if (ModelState.IsValid)
             {
                 var result = await _accountRepository.ChangePasswordAsync(model);
@@ -65,7 +74,9 @@ namespace FSMS_asp.net.Controllers
                 {
                     ViewBag.IsSuccess = true;
                     ModelState.Clear();
-                    return View();
+
+                    
+                    return View("~/Views/Account/Index.cshtml", accountIndexViewModel);
                 }
 
                 foreach (var error in result.Errors)
@@ -73,53 +84,43 @@ namespace FSMS_asp.net.Controllers
                     ModelState.AddModelError("", error.Description);
                 }
             }
-            //await _accountRepository.SignOutAsync();
-            return View(model);
-        }
-
-        [AllowAnonymous, HttpGet("reset-password")]
-        public IActionResult ResetPassword(string uid, string token)
-        {
-            ResetPasswordModel resetPasswordModel = new ResetPasswordModel
-            {
-                Token = token,
-                UserId = uid
-            };
-            return View(resetPasswordModel);
-        }
-
-        [AllowAnonymous, HttpPost("reset-password")]
-        public async Task<IActionResult> ResetPassword(ResetPasswordModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                model.Token = model.Token.Replace(' ', '+');
-                var result = await _accountRepository.ResetPasswordAsync(model);
-                if (result.Succeeded)
-                {
-                    ModelState.Clear();
-                    model.IsSuccess = true;
-                    return View(model);
-                }
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
-                }
-            }
-            return View(model);
+            return View("~/Views/Account/Index.cshtml", accountIndexViewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditPersonalInformation()
+        public async Task<IActionResult> EditPersonalInformation(EditInformationModel model)
         {
-            return View();
-        }
+            if (ModelState.IsValid)
+            {
+                var userId = _userService.GetUserId();
+                var user = await _userManager.FindByIdAsync(userId);
 
-        [Route("Logout")]
-        public async Task<IActionResult> Logout()
-        {
-            await _accountRepository.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+                if (user == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    user.Name = model.Name;
+                    user.PhoneNumber = model.PhoneNumber;
+                    user.Address = model.Address;
+                    user.DateOfBirth = model.DateOfBirth;
+
+                    await _userManager.UpdateAsync(user);
+                }
+
+                AccountIndexViewModel accountIndexViewModel = new AccountIndexViewModel()
+                {
+                    ChangePasswordModel = new ChangePasswordModel(),
+                    EditInformationModel = model,
+                };
+
+                ViewBag.IsSuccess = true;
+
+                return View("~/Views/Account/Index.cshtml", accountIndexViewModel);
+            }
+
+            return View("~/Views/Account/Index.cshtml");
         }
     }
 }

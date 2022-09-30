@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections;
+using System.ComponentModel.DataAnnotations;
 
 namespace FSMS_asp.net.Models.Sales_Report
 {
@@ -11,6 +12,6 @@ namespace FSMS_asp.net.Models.Sales_Report
         [Display(Name = "To")]
         [DataType(DataType.Date)]
         public DateTime? EndDate { get; set; }
-        public ICollection<InvoicesModel>? Invoices { get; set; }
+        public IEnumerable<InvoicesModel>? Invoices { get; set; }
     }
 }

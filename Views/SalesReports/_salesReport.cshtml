@@ -19,7 +19,7 @@
         <div class="container d-flex justify-content-center">
             <div>
                 <h5>
-                    <b id="title"></b>
+                    <b id="title">Sales Report From @ViewBag.startDate to @ViewBag.endDate</b>
                 </h5>
             </div>
         </div>
@@ -43,6 +43,20 @@
         <table class="table table-borderless">
 
             <tbody id="invoiceList">
+                @{
+                    int i = 1;
+                }
+                @foreach(var item in Model.Invoices)
+                {
+                    <tr class="text-center">
+                        <td style="width: 5%;"> @i </td>
+                        <td style="width: 15%;"> @item.Date.ToString("dd/MM/yyyy") </td>
+                        <td style="width: 20%;">INV @item.Id.ToString("0000000000") </td>
+                        <td style="width: 20%;"> @item.CustomerName </td>
+                        <td style="width: 20%;"></td>
+                        <td style="width: 20%;"> @item.TotalAmount.ToString("0.00") </td></tr>
+                        @(i++)
+                }
             </tbody>
 
         </table>
@@ -60,7 +74,7 @@
                     <th style="width: 20%;"></th>
                     <th style="width: 20%;"></th>
                     <th style="width: 20%;" class="text-end"> Total Amount (RM): </th>
-                    <th style="width: 20%;" class="text-center" id="totalAmount"></th>
+                    <th style="width: 20%;" class="text-center" id="totalAmount">@ViewBag.totalAmount</th>
                 </tr>
             </table>
         </div>

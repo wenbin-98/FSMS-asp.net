@@ -1,4 +1,6 @@
 ﻿using FSMS_asp.net.Models;
+using FSMS_asp.net.Models.Account;
+using FSMS_asp.net.Models.Login;
 using FSMS_asp.net.Services;
 using Microsoft.AspNetCore.Identity;
 

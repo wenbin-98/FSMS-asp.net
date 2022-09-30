@@ -19,7 +19,7 @@ builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserService, FSMS_asp.net.Services.UserService>();
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.Password.RequiredLength = 5;
@@ -42,7 +42,7 @@ builder.Services.Configure<SMTPConfigModel>(builder.Configuration.GetSection("SM
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.ConfigureApplicationCookie(config =>
 {
-    config.LoginPath = "/login";
+    config.LoginPath = "/login/index";
 });
 
 var app = builder.Build();

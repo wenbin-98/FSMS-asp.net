@@ -27,11 +27,29 @@ namespace FSMS_asp.net.Controllers
             return View(model);
         }
 
-        [HttpPost]
-        public async Task<JsonResult> Generate(DateTime startDate, DateTime endDate)
+        [HttpGet]
+        public async Task<ActionResult> Generate(DateTime startDate, DateTime endDate)
         {
-            var invoices = await _context.InvoicesModel.Where(x => x.Date >= startDate && x.Date <= endDate).ToListAsync();
-            return Json(invoices);
+            var invoices = await _context.InvoicesModel!.Where(x => x.Date >= startDate && x.Date <= endDate).ToListAsync();
+            Decimal totalAmount = 0;
+
+            SalesReportViewModel model = new SalesReportViewModel
+            {
+                StartDate = startDate,
+                EndDate = endDate,
+                Invoices = invoices
+            };
+
+            foreach (var item in invoices)
+            {
+                totalAmount += item.TotalAmount;
+            }
+
+            ViewBag.totalAmount = totalAmount.ToString("0.00");
+            ViewBag.startDate = startDate.ToString("dd/MM/yyyy");
+            ViewBag.endDate = endDate.ToString("dd/MM/yyyy");
+
+            return PartialView("_salesReport", model);
         }
     }
 }

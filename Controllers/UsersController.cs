@@ -48,6 +48,22 @@ namespace FSMS_asp.net.Controllers
                           Problem("Entity set 'ApplicationDbContext.CustomersModel'  is null.");
         }
 
+        public async Task<IActionResult> Details(string? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }
+
         public IActionResult Create()
         {
             return View();

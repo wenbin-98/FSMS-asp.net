@@ -1,9 +1,11 @@
 ﻿using FSMS_asp.net.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace FSMS_asp.net.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -15,8 +17,8 @@ namespace FSMS_asp.net.Controllers
 
         public IActionResult Index()
         {
-            //return View();
-            return Redirect("salesreports/index");
+            return View();
+            //return Redirect("salesreports/index");
         }
 
         public IActionResult Privacy()

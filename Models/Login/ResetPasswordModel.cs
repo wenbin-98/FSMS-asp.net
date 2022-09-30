@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
 
-namespace FSMS_asp.net.Models
+namespace FSMS_asp.net.Models.Login
 {
     [Keyless]
     public class ResetPasswordModel

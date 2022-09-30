@@ -1,4 +1,4 @@
-﻿@model AccountViewModel
+﻿@model FSMS_asp.net.Models.Account.AccountIndexViewModel
 
 @{
     ViewData["Title"] = "Profile Setting";
@@ -25,41 +25,7 @@
 
         <!--Edit Information-->
         <div class="container p-3">
-            <h2 class="pt-1">Change Personal Information</h2>
-
-            <form method="post" asp-action="EditPersonalInformation">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="row mt-2">
-                <div class="form-group col-md-6">
-                    <label asp-for="PhoneNumber" class="control-label"></label>
-                    <input asp-for="PhoneNumber" class="form-control" />
-                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                </div>
-
-                    <div class="form-group col-md-6 mt-2">
-                        <label asp-for="DateOfBirth" class="control-label"></label>
-                        <input asp-for="DateOfBirth" class="form-control" />
-                        <span asp-validation-for="DateOfBirth" class="text-danger"></span>
-                    </div>
-            </div>
-            
-            
-            <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <textarea asp-for="Address" class="form-control"></textarea>
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-            
-                <div class="d-flex justify-content-between mt-3">
-                    <div> </div>
-                    <button type="submit" class="btn btn-primary"><i class="bi bi-pencil-fill"></i> Update</button>
-                </div>
-            </form>
+            @Html.Partial("_EditInformation", Model.EditInformationModel)
         </div>
 
 
@@ -67,33 +33,7 @@
 
         <!--Change Password-->
         <div class="container p-3 pt-1">
-            <h2>Change Password</h2>
-
-            <form method="post" asp-action="ChangePassword">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group mt-2">
-                    <label asp-for="CurrentPassword" class="control-label"></label>
-                    <input asp-for="CurrentPassword" class="form-control" />
-                    <span asp-validation-for="CurrentPassword" class="text-danger"></span>
-                </div>
-                <div class="row mt-2">
-                    <div class="form-group col-md-6">
-                        <label asp-for="NewPassword" class="control-label"></label>
-                        <input asp-for="NewPassword" class="form-control" />
-                        <span asp-validation-for="NewPassword" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label asp-for="ConfirmPassword" class="control-label"></label>
-                        <input asp-for="ConfirmPassword" class="form-control" />
-                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                    </div>
-                </div>
-                
-                <div class="d-flex justify-content-between mt-3 mb-2">
-                    <div></div>
-                    <button type="submit" class="btn btn-primary"><i class="bi bi-gear-fill"></i> Change Password</button>
-                </div>
-            </form>
+            @Html.Partial("_ChangePassword", Model.ChangePasswordModel)
         </div>
     </div>
 </div>
