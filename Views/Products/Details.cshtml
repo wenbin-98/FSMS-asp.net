@@ -1,0 +1,223 @@
+﻿@model ProductsModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Title and Breadcrumb -->
+<div class="d-flex justify-content-between">
+    <h1 class="ps-4 pb-1 title">
+        <i class="bi bi-box-seam-fill"></i> Products Details
+    </h1>
+
+    <div class="d-flex align-items-center pe-4 pe-sm-0">
+        <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);"
+             aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-action="Index">Products</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Details</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="container">
+    <div class="card">
+        <div class="card-body d-flex justify-content-between">
+
+            <!-- Image -->
+            @if (Model.Image != null)
+            {
+                <figure class="figure mb-0 me-5">
+                    <img src="@Model.Image" class="img-thumbnail">
+                </figure>
+            }
+            else
+            {
+                <figure class="figure mb-0 me-5">
+                    <img src="/images/no product image.jpg" class="img-thumbnail">
+                </figure>
+            }
+
+            <!-- Table -->
+            <table class="table table-borderless">
+                <tbody>
+
+                    <!-- Product Name -->
+                    <tr>
+                        <th scope="col">Name:</th>
+                        <td scope="col">
+                            @{
+                                if (Model.Name == null)
+                                {
+                                        <p>There is an error in the application.</p>
+                                }
+                                else
+                                {
+                                        <p>@Model.Name</p>
+                                }
+                            }
+                        </td>
+                    </tr>
+
+                    <!-- Product Price -->
+                    <tr>
+                        <th scope="col">Price:</th>
+                        <td scope="col">
+                            
+                            @{
+                                if (Model.Name == null)
+                                {
+                                        <p>There is an error in the application.</p>
+                                }
+                                else
+                                {
+                                        <p>RM @Model.Price</p>
+                                }
+                            }
+                        </td>
+                    </tr>
+
+                    <!-- Product Quantity -->
+                    <tr>
+                        <th scope="row">Quantity:</th>
+                        <td>
+                            @{
+                                if (Model.Name == null)
+                                {
+                                        <p>There is an error in the application.</p>
+                                }
+                                else
+                                {
+                                        <p>@Model.Quantity</p>
+                                }
+                            }
+                        </td>
+                    </tr>
+
+                    <!-- Product Desc -->
+                    <tr>
+                        <th scope="row">Description: </th>
+                        <td>
+                            @{
+                                if (Model.Description == null)
+                                {
+                                        <p>-</p>
+                                }
+                                else
+                                {
+                                        <p>@Model.Description</p>
+                                }
+                            }
+                        </td>
+                    </tr>
+
+                    <!-- Product Updated By Who -->
+                    <tr>
+                        <th scope="row">Last Updated By:</th>
+                        <td>
+                            @{
+                                if (Model.Name == null)
+                                {
+                                        <p>-</p>
+                                }
+                                else
+                                {
+                                        <p>@Model.Name</p>
+                                }
+                            }
+                        </td>
+                    </tr>
+
+                    <!-- Product Updated Timestamp -->
+                    <tr>
+                        <th scope="row">Last Updated at:</th>
+                        <td>
+                            @{
+                                if (Model.Name == null)
+                                {
+                                        <p>There is an error in the application.</p>
+                                }
+                                else
+                                {
+                                        <p>@Model.UpdatedAt</p>
+                                }
+                            }
+                        </td>
+                    </tr>
+
+                    <!-- Empty Space -->
+                    <tr>
+                        <th scope="row"></th>
+                        <td></td>
+                    </tr>
+
+                    <!-- Button -->
+                    <tr>
+                        <th scope="row"></th>
+                        <td colspan="2" class="d-flex justify-content-end">
+                            <div class="pe-1">
+                                <!-- Edit Button -->
+                                <a class="btn btn-success btn-sm" asp-action="Edit" asp-route-id="@Model?.Id">
+                                    <i class="bi bi-pencil-fill"></i> Edit
+                                </a>
+                            </div>
+
+                            <!-- Delete Button -->
+                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#deleteModal"
+                                    data-val="Are you sure want to delete @(Model.Name)?"
+                                    data-id="@Model.Id"
+                            id="deleteButton">
+                                <i class="bi bi-trash-fill"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" tabindex="-1" id="deleteModal" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Title -->
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="modal-body"><p id="modal-body"></p></></div>
+
+            <!-- Modal Button -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+
+                <!-- Delete Button -->
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" id="hiddenId">
+                    <button type="submit" class="btn btn-danger" data-bs-dismiss="modal" id="confirmDelete">Delete</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#deleteButton').on('click', function (event) {
+        var message = $('#deleteButton').data('val');
+        $(".modal-body").text(message);
+
+        var id = $('#deleteButton').data('id');
+        $("#hiddenId").val(id);
+
+        $('#confirmDelete').attr('formaction', '/Products/Delete/' + id);
+    });
+</script>

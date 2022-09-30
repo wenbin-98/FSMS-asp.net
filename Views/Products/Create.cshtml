@@ -1,0 +1,105 @@
+﻿@model ProductsModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Title and Breadcrumbs -->
+<div class="d-flex justify-content-between">
+    <h1 class="ps-4 pb-1 title">
+        <i class="bi bi-box-seam-fill"></i> Create New Products
+    </h1>
+
+    <div class="d-flex align-items-center pe-4 pe-sm-0">
+        <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);"
+             aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="products/index">Products</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Create</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+
+<div class="card mb-2">
+    <div class="card-body">
+        <div class="col-12 p-2 pt-1">
+
+            <!--Validation Summary-->
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- Form -->
+            <form asp-action="Create" enctype="multipart/form-data" >
+
+            <!-- Name -->
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                        <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name"         class="form-control" />
+                <span asp-validat        ion-for="Name" class="text-danger"></span>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="row">
+                <!-- Price -->
+                <div class="form-group col-md-8">
+                        <label asp-for="Price" class="control-label"></label>
+                        <input asp-for="Price" class="form-control" />
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+
+                <!-- Break line when small screen size -->
+                <div class="d-block d-md-none d-lg-none d-xl-none d-xxl-none">
+                    <br>
+                </div>
+
+                <!-- Quantity -->
+                <div class="col-md-4">
+                        <label asp-for="Quantity" class="control-label"></label>
+                        <input asp-for="Quantity" class="form-control" min="1"/>
+                        <span asp-validation-for="Quantity" class="text-danger"></span>
+                </div>
+            </div>
+
+            <br>
+
+            <!-- Description -->
+            <div class="form-group">
+                    <label asp-for="Description" class="control-label"></label>
+                    <textarea asp-for="Description" class="form-control"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <br>
+
+            <!-- Upload Button -->
+            <div class="">
+                    <label asp-for="Image" class="control-label mb-1"></label>
+                    <div class="input-group mb-3">
+                    <input asp-for="Image" type="file" class="form-control" />
+                    <label class="input-group-text" for="inputGroupFile02">Upload</label>
+                </div>
+            </div>
+
+            <br>
+
+            <!-- Submit Button -->
+            <div class="d-flex align-items-end justify-content-end">
+                <button type="submit" class="btn btn-primary" name="createProducts">
+                    <i class="bi bi-box2-fill"></i>
+                    Create
+                </button>
+            </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

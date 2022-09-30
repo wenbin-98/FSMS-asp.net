@@ -1,0 +1,458 @@
+﻿@using Newtonsoft.Json
+@model FSMS_asp.net.Models.Delivery_Order.DOrdersViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Title and Breadcrumbs -->
+<div class="d-flex justify-content-between">
+    <h1 class="ps-4 pb-1 title">
+        <i class="bi bi-truck me-1 ms-2"></i> Edit Delivery Orders
+    </h1>
+
+    <div class="d-flex align-items-center pe-4 pe-sm-0">
+        <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);"
+             aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-action="Index">Delivery Orders</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Edit</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+
+<div class="card mb-2">
+    <div class="card-body">
+        <div class="col-12 p-2 pt-1">
+
+            <!--Validation Error-->
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- Form -->
+            <form asp-action="Edit" id="editDOrders">
+
+                <!-- Dorders ID -->
+                <h3 style="font-weight: bold;" class="pb-3" id="IdShown">
+                    Delivery Order ID: DO
+                </h3>
+                <input type="hidden" id="Id" value="@ViewBag.NewDOrdersId" />
+                <div class="row pb-3">
+
+                    <!-- Customers -->
+                    <div class="col-md-6">
+
+                        <label asp-for="CustomersId" class="control-label"></label>
+                        <select asp-for="CustomersId" class="form-select" asp-items="ViewBag.Customers">
+                            <option value="" selected>Choose the Customers...</option>
+                        </select>
+                        <span asp-validation-for="CustomersId" class="text-danger"></span>
+
+                    </div>
+
+                    <!-- Date -->
+                    <div class="col-md-6">
+
+                        <label asp-for="Date" class="control-label"></label>
+                        <input asp-for="Date" class="form-control" />
+                        <span asp-validation-for="Date" class="text-danger"></span>
+
+                    </div>
+
+                </div>
+
+                <div class="row pb-3">
+
+                    <!-- PO No. -->
+                    <div class="col-md-6">
+                        <label asp-for="PoNo" class="control-label"></label>
+                        <input asp-for="PoNo" class="form-control" />
+                        <span asp-validation-for="PoNo" class="text-danger"></span>
+                    </div>
+
+                    <!-- Reference No. -->
+                    <div class="col-md-6">
+                        <label asp-for="RefNo" class="control-label"></label>
+                        <input asp-for="RefNo" class="form-control" />
+                        <span asp-validation-for="RefNo" class="text-danger"></span>
+                    </div>
+
+                </div>
+
+                <!-- Bold Line -->
+                <hr style="height:1px;border-width:0;color:gray;background-color:gray">
+
+                <table class="table text-center" style="vertical-align: middle">
+                    <thead>
+                        <tr class="table-secondary">
+                            <th scope="col" style="width: 5%;">Id.</th>
+                            <th scope="col" style="width: 50%;">Product Name</th>
+                            <th scope="col" style="width: 10%;">Qty.</th>
+                            <th scope="col" style="width: 15%;">Unit Price (RM)</th>
+                            <th scope="col" style="width: 15%;">Total (RM)</th>
+                            <th scope="col" style="width: 5%;">#</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemTable">
+                    </tbody>
+
+                </table>
+
+                <!-- Add New Row -->
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal" id="AddNewRowButton">
+                        <i class="bi bi-plus-circle-fill"></i> Add New Row
+                    </button>
+                </div>
+
+                <!-- Bold Line -->
+                <hr style="height:3px;border-width:0;color:black;background-color:black" class="mb-0">
+
+                <!-- Total Amount -->
+                <table class="table text-center" style="vertical-align: middle">
+                    <tr class="table table-borderless">
+                        <th scope="col" style="width: 5%;"></th>
+                        <th scope="col" style="width: 50%;"></th>
+                        <th scope="col" style="width: 10%;"></th>
+                        <th scope="col" style="width: 15%;">Total Amount (RM)</th>
+                        <th scope="col" style="width: 15%;" id="ShowTotalAmount">0.00</th>
+                        <th scope="col" style="width: 5%;"></th>
+                    </tr>
+                    <input asp-for="TotalQuantity" type="hidden" value="0" />
+                    <input asp-for="TotalAmount" type="hidden" value="0" />
+                    <input asp-for="DOrderDetailsJson" type="hidden" value="0" />
+                </table>
+
+                <!-- Warning span -->
+                <div class="d-flex align-items-end justify-content-end pe-2 mb-1">
+                    <span class="text-danger" id="DOrdersSubmitWarning"></span>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-flex align-items-end justify-content-end pe-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-pencil-fill"></i> Update
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Add Products</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+
+                <div class="row">
+
+                    <!-- Products -->
+                    <div class="col-6">
+
+                        <label class="control-label" for="#ModalProductId">Products</label>
+                        <select class="form-select" asp-items="ViewBag.Products" id="ModalProductId">
+                            <option value="" selected>Choose the Product...</option>
+                        </select>
+                        <span class="text-danger mt-1" id="ModalProductIdWarning"></span>
+
+                    </div>
+
+                    <!-- Products Quantity -->
+                    <div class="col-6">
+                        <label class="control-label">Quantity</label>
+                        <input class="form-control" disabled id="ModalProductQuantity" type="number" min="0">
+                        <span class="text-danger mt-1" id="ModalProductQuantityWarning"></span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle-fill"></i> Close
+                </button>
+                <button type="submit" class="btn btn-primary" id="AddDetailButton">
+                    <i class="bi bi-box-seam-fill"></i> Add
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+
+    $(document).ready(function () {
+
+        //product list from controller
+        var products = @Html.Raw(JsonConvert.SerializeObject(Model.Products) as String);
+        //detail will save at here
+        var allProduct = [];
+        var dOrder = @Html.Raw(JsonConvert.SerializeObject(Model) as String);
+        //console.log(dOrder);
+        var dOrderDetail = @Html.Raw(JsonConvert.SerializeObject(Model.DOrderDetails) as String);
+        var totalQuantity = parseInt(0);
+
+        //set all dOrder detail
+        for (var i in dOrderDetail) {
+            var productId = dOrderDetail[i].ProductId;
+            var productName = dOrderDetail[i].ProductName;
+            var productQuantity = dOrderDetail[i].Quantity;
+            var productPrice = dOrderDetail[i].ProductPrice;
+            var productAmount = (parseFloat(productQuantity) * parseFloat(productPrice)).toFixed(2);
+            console.log(productAmount);
+
+            //add row
+            $('#itemTable').append('<tr id="row_' + productId + '"><td>' + productId + '</td><td>' + productName + '</td><td>' + productQuantity + '</td><td>' + productPrice + '</td><td>' + productAmount + '</td><td><button data-Id="' + productId + '" class= "btn btn-danger removeButton" type="button" value="' + productId + '"><i class="bi bi-trash-fill"></i></td ></tr> ');
+
+            //add to allProduct
+            var item = {
+                Id: productId,
+                Quantity: productQuantity,
+                TotalAmount: productAmount
+            };
+
+            allProduct.push(item);
+
+            //Set total quantity
+            totalQuantity += parseInt(productQuantity);
+            $('#TotalQuantity').val(totalQuantity);
+        }
+
+        //set the total amount
+        var totalAmount = dOrder.TotalAmount;
+        $('#TotalAmount').val(totalAmount);
+        $('#ShowTotalAmount').text(totalAmount);
+
+        //set customer
+        var customer = dOrder.CustomersId;
+        //console.log(customer);
+        try {
+            $('#CustomersId option[value=' + customer + ']').attr("selected", "selected");
+            //console.log(customer);
+        } catch (e) {
+            //console.log("e");
+            $("#CustomersId").val($("#CustomersId option:first").val());
+        }
+
+        //Set max value of product
+        $('#ModalProductId').change(function (e) {
+            var productId = $('#ModalProductId').val();
+
+            //if something not null was selected
+            if (productId != "") {
+                var MaxValue = products.find(x => x.Id == productId).Quantity;
+
+                $('#ModalProductQuantity').prop('disabled', false);
+                $('#ModalProductQuantity').val(null);
+                $('#ModalProductQuantity').attr('max', MaxValue);
+            }
+            //if something null was selected
+            else if (productId == "") {
+                $('#ModalProductQuantity').prop('disabled', true);
+                $('#ModalProductQuantity').val(null);
+            }
+        });
+
+        //Add new row button when click
+        $('#AddNewRowButton').click(function (e) {
+
+            //reset the modal to default
+            $('#ModalProductId').val($("#ModalProductId option:first").val());
+            $('#ModalProductQuantity').val(null);
+            $('#ModalProductQuantity').prop('disabled', true);
+            $('#ModalProductIdWarning').text("");
+            $('#ModalProductQuantityWarning').text("");
+
+            //get all product id from all current detail
+            var productIdInArray = [];
+            for (var i = 0; i < allProduct.length; i++) {
+                productIdInArray.push(allProduct[i].Id);
+            }
+
+            //show all option
+            $("#ModalProductId > option").each(function () {
+                $(this).show();
+            });
+
+            //hide option that already in detail
+            for (var i = 0; i < productIdInArray.length; i++) {
+                $("#ModalProductId option[value=" + productIdInArray[i] + "]").hide();
+            }
+        });
+
+        //Validate all information on Modal and add detail
+        $('#AddDetailButton').click(function (e) {
+            var productId = $('#ModalProductId').val();
+            var productQuantity = $('#ModalProductQuantity').val();
+
+            //if user had select a valid product as option
+            if (productId != "") {
+                //if user select a valid quantity
+                if (productQuantity != null) {
+                    //if the quantity is bigger than 0
+                    if (productQuantity > 0) {
+                        //create an object
+                        var item = {
+                            Id: productId,
+                            Quantity: productQuantity,
+                            TotalAmount: addedProductTotal
+                        };
+
+                        //Add DOrder Details
+                        var addedProductId = productId;
+                        var addedProductName = products.find(x => x.Id == productId).Name;
+                        var addedProductQuantity = productQuantity;
+                        var addedProductPrice = products.find(x => x.Id == productId).Price;
+                        var addedProductTotal = (parseFloat(addedProductPrice) * parseFloat(addedProductQuantity)).toFixed(2);
+                        allProduct.push(item);
+                        //console.log(allProduct);
+
+                        //addRow
+                        $('#itemTable').append('<tr id="row_' + addedProductId + '"><td>' + addedProductId + '</td><td>' + addedProductName + '</td><td>' + addedProductQuantity + '</td><td>' + addedProductPrice + '</td><td>' + addedProductTotal + '</td><td><button data-Id="' + productId + '" class= "btn btn-danger removeButton" type="button" value="' + addedProductId + '"><i class="bi bi-trash-fill"></i></td ></tr> ');
+
+                        //hide modal
+                        $('#addModal').modal('hide');
+
+                        //Subtract number of quantity from db
+                        var MaxValue = products.find(x => x.Id == productId).Quantity;
+                        var RemainQuantity = MaxValue - productQuantity;
+                        products.find(x => x.Id == productId).Quantity = RemainQuantity;
+
+                        //Set Total Amount
+                        var totalAmount = $('#TotalAmount').val();
+                        var newTotalAmount = (parseFloat(addedProductTotal) + parseFloat(totalAmount)).toFixed(2);
+                        $('#ShowTotalAmount').text(newTotalAmount);
+                        $('#TotalAmount').val(newTotalAmount);
+
+                        //Clear at least one DOrder detail warning
+                        $('#DOrdersSubmitWarning').text("");
+                        //Set total quantity
+                        totalQuantity += parseInt(addedProductQuantity);
+                        $('#TotalQuantity').val(totalQuantity);
+                    }
+                    else //if the quantity of product is 0
+                    {
+                        $('#ModalProductQuantityWarning').text("Products quantity cannot be 0.");
+                    }
+
+                }
+                else //if the quantity of product is null
+                {
+                    $('#ModalProductQuantityWarning').text("Products quantity cannot be empty.");
+                }
+
+            }
+            else //if user didnt choose a valid product option then warning the user
+            {
+                $('#ModalProductIdWarning').text("Products cannot be empty.");
+            }
+
+
+            //insert detail into array
+            if (productId != "" && productQuantity != 0 && productQuantity != "") {
+
+            }
+            //If two input not valid
+            else if (productId == "" && productQuantity == 0 || productQuantity == "") {
+                $('#ModalProductIdWarning').text("Products cannot be empty.");
+                $('ModalProductQuantityWarning').text("Products quantity cannot be 0 or empty.");
+            }
+            //If Id input not valid
+            else if (productId == "" && productQuantity != 0 || productQuantity != "") {
+                $('#ModalProductIdWarning').text("Products cannot be empty.");
+            }
+            //If Quantity input not valid
+            else if (productId != "" && productQuantity == 0 || productQuantity == "") {
+                $('ModalProductQuantityWarning').text("Products quantity cannot be 0 or empty.");
+            }
+        });
+
+        //Delete Details
+        $("#itemTable").on("click", ".removeButton", function (e) {
+            var productId = $(this).val();
+
+            //remove row
+            $("#row_" + productId).remove();
+
+            //increase back the number of products
+            var addBackQuantity = allProduct.find(x => x.Id == productId).Quantity;
+            products.find(x => x.Id == productId).Quantity += addBackQuantity;
+            //console.log("Subtract");
+
+            //subtract total amount
+            var totalAmount = $('#TotalAmount').val();
+            console.log("current "+totalAmount);
+            var detailTotalAmount = allProduct.find(x => x.Id == productId).TotalAmount;
+            console.log(allProduct);
+            console.log("detail "+detailTotalAmount);
+            var newTotalAmount = (parseFloat(totalAmount) - parseFloat(detailTotalAmount)).toFixed(2);
+            console.log("ner "+newTotalAmount);
+            //if new value is NaN then turn to 0.00
+            if (isNaN(newTotalAmount)) {
+                debugPrice = parseFloat(0.00);
+                for(var i=0; i<allProduct.length; i++)
+                {
+                    debugPrice += allProduct[i].TotalAmount;
+                }
+                newTotalAmount = parseFloat(debugPrice).toFixed(2);
+            }
+            $('#ShowTotalAmount').text(newTotalAmount);
+            $('#TotalAmount').val(newTotalAmount);
+
+            //remove from array
+            var detailIndex = allProduct.findIndex(x => x.Id == productId);
+            allProduct.splice(detailIndex, 1);
+
+            //Set total quantity
+            totalQuantity -= addBackQuantity;
+            $('#TotalQuantity').val(totalQuantity);
+
+        });
+
+        //Validate before create DOrder
+        $('#editDOrders').submit(function (e) {
+
+            event.preventDefault(); //this will prevent the default submit
+
+            //if no product is added then stop submit
+            if (allProduct.length == 0) {
+                //warning user
+                $('#DOrdersSubmitWarning').text("*Please add at least one product in delivery order.");
+                //cancel submit
+                return false;
+            }
+            else //submit
+            {
+                var JsonString = JSON.stringify(allProduct);
+                $('#DOrderDetailsJson').val(JsonString);
+                $(this)[0].submit();
+            }
+        })
+
+        //set dOrder id on the view page
+        var IdFromViewBag = '@ViewBag.NewDOrdersId';
+        IdShown = String(IdFromViewBag).padStart(10, '0');
+        $('#IdShown').append(IdShown);
+
+    });
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

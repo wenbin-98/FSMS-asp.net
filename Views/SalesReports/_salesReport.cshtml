@@ -1,0 +1,84 @@
+﻿@model FSMS_asp.net.Models.Sales_Report.SalesReportViewModel
+
+@if (Model.StartDate != null && Model.EndDate != null)
+{
+    <div class="col-12 p-2 pt-1" id="printArea">
+        <!-- Store Name -->
+        <div class="container d-flex justify-content-center">
+            <div>
+                <h3 style="font-weight:bold;">LEAN AIK FURNITURE</h3>
+                <address class="mb-0">4995, TINGKAT BAWAH JALAN NEW FERRY, BUTTERWORTH,</address>
+                <address class="mb-0">12100, PULAU PINANG, MALAYSIA.</address>
+                <address class="mb-0">Tel: 04-1234567 Fax: 04-1234567 Email: lean_aik@gmail.com</address>
+            </div>
+        </div>
+
+        <br>
+
+        <!-- Date and Title -->
+        <div class="container d-flex justify-content-center">
+            <div>
+                <h5>
+                    <b id="title"></b>
+                </h5>
+            </div>
+        </div>
+
+        <!-- Bold Line -->
+        <hr style="height:3px;border-width:0;color:gray;background-color:gray" class="mb-1 mt-1">
+
+        <table class="table">
+            <thead>
+                <tr class="text-center">
+                    <th style="width: 5%;">#</th>
+                    <th style="width: 15%;">Date</th>
+                    <th style="width: 20%;">Invoice No.</th>
+                    <th style="width: 20%;">Customer</th>
+                    <th style="width: 20%;"></th>
+                    <th style="width: 20%;">Amount</th>
+                </tr>
+            </thead>
+        </table>
+
+        <table class="table table-borderless">
+
+            <tbody id="invoiceList">
+            </tbody>
+
+        </table>
+
+        <!-- Sales Report Footer -->
+        <div class="printFooter">
+            <!-- Bold Line -->
+            <hr style="height:3px;border-width:0;color:black;background-color:black; opacity: 100%;" class="mb-1 mt-1">
+
+            <!-- Total Amount -->
+            <table class="table">
+                <tr>
+                    <th style="width: 5%;"></th>
+                    <th style="width: 15%;"></th>
+                    <th style="width: 20%;"></th>
+                    <th style="width: 20%;"></th>
+                    <th style="width: 20%;" class="text-end"> Total Amount (RM): </th>
+                    <th style="width: 20%;" class="text-center" id="totalAmount"></th>
+                </tr>
+            </table>
+        </div>
+
+
+
+        <!-- end of printArea -->
+    </div>
+
+    <div class="d-flex justify-content-end">
+        <button type="button" class="btn btn-secondary" id="printButton"><i class="bi bi-printer-fill"></i> Print</button>
+    </div>
+}
+else
+{
+    <div class="container d-flex justify-content-center">
+        <div>
+            Please enter start date and end date.
+        </div>
+    </div>
+}

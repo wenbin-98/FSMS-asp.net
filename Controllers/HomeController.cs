@@ -15,7 +15,8 @@ namespace FSMS_asp.net.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            //return View();
+            return Redirect("salesreports/index");
         }
 
         public IActionResult Privacy()

@@ -21,6 +21,18 @@
     {
       "library": "bootstrap@5.2.1",
       "destination": "wwwroot/bootstrap/"
+    },
+    {
+      "library": "bootstrap-icons@1.9.1",
+      "destination": "wwwroot/bootstrap-icons/"
+    },
+    {
+      "library": "printThis@1.15.0",
+      "destination": "wwwroot/printThis/"
+    },
+    {
+      "library": "jqueryui@1.13.2",
+      "destination": "wwwroot/jqueryui/"
     }
   ]
 }

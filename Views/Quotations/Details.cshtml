@@ -1,0 +1,227 @@
+﻿@using Newtonsoft.Json
+@model FSMS_asp.net.Models.Quotation.QuotationsViewModel
+
+@{
+    ViewData["Title"] = "Quotation Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Title and Breadcrumbs -->
+<div class="d-flex justify-content-between">
+    <h1 class="ps-4 pb-1 title">
+        <i class="bi bi-cash-coin"></i> Quotation Details
+    </h1>
+
+    <div class="d-flex align-items-center pe-4 pe-sm-0">
+        <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);"
+             aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-action="index">Quotation</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Details</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+
+<div class="card mb-2">
+    <div class="card-body">
+        <div class="col-12 p-2 pt-1" id="printArea">
+
+            <!-- Store Name -->
+            <div class="container d-flex justify-content-center">
+                <div>
+                    <h3 style="font-weight:bold;">LEAN AIK FURNITURE</h3>
+                    <address class="mb-0">4995, TINGKAT BAWAH JALAN NEW FERRY, BUTTERWORTH,</address>
+                    <address class="mb-0">12100, PULAU PINANG, MALAYSIA.</address>
+                    <address class="mb-0">Tel: 04-1234567 Fax: 04-1234567 Email: lean_aik@gmail.com</address>
+                </div>
+            </div>
+
+            <!-- Bold Line -->
+            <hr style="height:3px;border-width:0;color:gray;background-color:gray">
+
+            <!-- Customer Information, Invoice Number and Date -->
+            <div class="container d-flex justify-content-between">
+
+                <!-- Customer Information -->
+                <div>
+                    <strong>Customer:</strong>
+                    <br>
+                    @Model.CustomerName
+                    <br />
+                    @Model.CustomerAddress
+                    <br />
+                    @Model.CustomerEmail
+                    <br />
+                    @Model.CustomerHpNo
+                </div>
+
+                <div style="text-center">
+                    <h1 style="padding: 10px 40px; border: 2px solid; font-weight: bold;" class="text-center">
+                        Quotation
+                    </h1>
+                    <table class="table table-borderless" style="min-width: 40px">
+                        <tbody>
+
+                            <!-- Quotation ID -->
+                            <tr>
+                                <th scope="row" style="width: 30%">No.:</th>
+                                <td colspan="2" style="width: 70%"><b>Q</b> @Model.Id.ToString("0000000000")</td>
+                            </tr>
+
+                            <!-- Date -->
+                            <tr>
+                                <th scope="row" style="width: 30%">Date: </th>
+                                <td colspan="2" style="width: 70%" id="date">
+                                    @Html.ValueFor(model => model.Date, "{0:dd/MM/yyyy}")
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row" style="width: 30%">Status: </th>
+                                <td colspan="2" style="width: 70%">
+                                    <div id="quotationStatus"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row" style="width: 30%">Currency: </th>
+                                <td colspan="2" style="width: 70%">
+                                    Ringgit Malaysia (RM)
+                                </td>
+                            </tr>
+                    </table>
+                </div>
+            </div>
+
+            
+
+            <!-- Line -->
+            <hr class="mb-0 mt-0" style="border-top: 2px solid; border-color: black; opacity: 100%" />
+
+            <!-- Table Header -->
+            <table class="table mb-0">
+                <tr class="text-center">
+                    <th scope="col" style="width: 10%;">No</th>
+                    <th scope="col" style="width: 50%;">Item</th>
+                    <th scope="col" style="width: 10%;">Quantity</th>
+                    <th scope="col" style="width: 10%;">UOM</th>
+                    <th scope="col" style="width: 10%;">Unit Price</th>
+                    <th scope="col" style="width: 10%;">Amount</th>
+                </tr>
+            </table>
+
+            <!-- Line -->
+            <hr class="m-0" style="border-top: 2px solid; border-color: black; opacity: 100%" />
+
+            <!-- Table Body -->
+            <table class="table table-borderless">
+                <tbody id="tbody">
+                </tbody>
+            </table>
+
+            <div class="printFooter">
+
+                <br />
+
+                <!-- Total Amount (Words) -->
+                <div class="pb-1 d-flex justify-content-start">
+                    <p class="mb-0">RINGGIT MALAYSIA:&nbsp;</p><p id="totalAmountToWords" class="mb-0" style="text-transform: uppercase"></p>
+                </div>
+
+
+                <!-- Line -->
+                <hr class="mt-0 mb-1" style="border-top: 2px solid; border-color: black; opacity: 100%" />
+
+                <!-- Details -->
+                <table style="max-height: 20px" class="table table-borderless">
+                    <tr>
+                        <!-- Note -->
+                        <td style="width: 10%">
+                        </td>
+
+                        <!-- Total Quantity -->
+                        <td style="width: 50%" class="text-end">
+                            Total Quantity:
+                        </td>
+                        <td style="width: 10%" class="text-center">
+                            <b id="totalQuantity"></b>
+                        </td>
+
+                        <!-- Net Total -->
+                        <td style="width: 20%" class="text-end">
+                            Net Total (MYR):
+                        </td>
+                        <td style="width: 30%;" class="text-center">
+                            <h6 style="border-bottom: 3px solid black; "><b>@Model.TotalAmount</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6">
+                            <div class="small">
+                        We hope that the above quotation will meet your requirements and looking <br />
+                        forwards for your early confirmation of order. <br />
+                        <br />
+                        Thank you.<br />
+                        <br />
+                        Yours faithfully,<br />
+                        <h3><em><b>Beh</b></em></h3>
+                    </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-end">
+    <button type="button" class="btn btn-secondary" id="printButton"><i class="bi bi-printer-fill"></i> Print</button>
+</div>
+
+<script>
+    $(document).ready(function () {
+        //Print Area
+        $("#printButton").on("click", function () {
+            $("#printArea").printThis();
+        })
+
+        //Number to words
+        $('#totalAmountToWords').text(toWords(@Model.TotalAmount) + " ONLY");
+
+        var quotationDetail = @Html.Raw(JsonConvert.SerializeObject(Model.QuotationDetails) as String);
+        var totalQuantity = 0;
+
+        //add row
+        for (var i in quotationDetail) {
+            var productId = quotationDetail[i].ProductId;
+            var productName = quotationDetail[i].ProductName;
+            var productQuantity = quotationDetail[i].Quantity;
+            var productPrice = (parseFloat(quotationDetail[i].ProductPrice)).toFixed(2);
+            var productAmount = (parseFloat(productQuantity) * parseFloat(productPrice)).toFixed(2);
+
+            var row = '<tr class="text-center">';
+            row += '<td style="width: 10%;">' + parseInt(i + 1) + '</td>';
+            row += '<td style="width: 50%;">' + productName + '</td>';
+            row += '<td style="width: 10%;">' + productQuantity + '</td>';
+            row += '<td style="width: 10%;">Unit</td>';
+            row += '<td style="width: 10%;">' + productPrice + '</td >';
+            row += '<td style="width: 10%;">' + productAmount + '</td>';
+            row += '</tr>';
+
+            //add row
+            $('#tbody').append(row);
+
+            totalQuantity += productQuantity;
+            $('#totalQuantity').text(totalQuantity);
+        };
+
+        //invoice status
+        if (@Model.CancelStatus.ToString().ToLower() == false) {
+            $('#quotationStatus').text('Active');
+        }
+        else if (@Model.CancelStatus.ToString().ToLower() == true) {
+            $('#quotationStatus').text('Cancel');
+            $('#quotationStatus').css('color', 'red');
+        }
+    })
+</script>

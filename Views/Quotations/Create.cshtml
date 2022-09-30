@@ -1,0 +1,390 @@
+﻿@model FSMS_asp.net.Models.Quotation.QuotationsViewModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Title and Breadcrumbs -->
+<div class="d-flex justify-content-between">
+    <h1 class="ps-4 pb-1 title">
+        <i class="bi bi-briefcase-fill"></i> Create New Quotations
+    </h1>
+
+    <div class="d-flex align-items-center pe-4 pe-sm-0">
+        <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);"
+             aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-action="Index">Quotations</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Create</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+
+<div class="card mb-2">
+    <div class="card-body">
+        <div class="col-12 p-2 pt-1">
+
+            <!--Validation Error-->
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- Form -->
+            <form asp-action="Create" id="createQuotation">
+
+                <!-- Quotation ID -->
+                <h3 style="font-weight: bold;" class="pb-3" id="IdShown">
+                    Quotation ID: Q 
+                </h3>
+                <input type="hidden" id="QuotationId" value="@ViewBag.NewInvoiceId" />
+                <div class="row pb-3">
+
+                    <!-- Customers -->
+                    <div class="col-md-6">
+
+                        <label asp-for="CustomersId" class="control-label"></label>
+                        <select asp-for="CustomersId" class="form-select" asp-items="ViewBag.Customers">
+                            <option value="" selected>Choose the Customers...</option>
+                        </select>
+                        <span asp-validation-for="CustomersId" class="text-danger"></span>
+
+                    </div>
+
+                    <!-- Date -->
+                    <div class="col-md-6">
+
+                        <label asp-for="Date" class="control-label"></label>
+                        <input asp-for="Date" class="form-control" />
+                        <span asp-validation-for="Date" class="text-danger"></span>
+
+                    </div>
+
+                </div>
+
+                <!-- Bold Line -->
+                <hr style="height:1px;border-width:0;color:gray;background-color:gray">
+
+                <table class="table text-center" style="vertical-align: middle">
+                    <thead>
+                        <tr class="table-secondary">
+                            <th scope="col" style="width: 10%;">Product Id</th>
+                            <th scope="col" style="width: 45%;">Product Name</th>
+                            <th scope="col" style="width: 10%;">Qty.</th>
+                            <th scope="col" style="width: 15%;">Unit Price (RM)</th>
+                            <th scope="col" style="width: 15%;">Total (RM)</th>
+                            <th scope="col" style="width: 5%;">#</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemTable">
+                    </tbody>
+
+                </table>
+
+                <!-- Add New Row -->
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal" id="AddNewRowButton">
+                        <i class="bi bi-plus-circle-fill"></i> Add New Row
+                    </button>
+                </div>
+
+                <!-- Bold Line -->
+                <hr style="height:3px;border-width:0;color:black;background-color:black" class="mb-0">
+
+                <!-- Total Amount -->
+                <table class="table text-center" style="vertical-align: middle">
+                    <tr class="table table-borderless">
+                        <th scope="col" style="width: 10%;"></th>
+                        <th scope="col" style="width: 45%;"></th>
+                        <th scope="col" style="width: 10%;"></th>
+                        <th scope="col" style="width: 15%;">Total Amount (RM)</th>
+                        <th scope="col" style="width: 15%;" id="ShowTotalAmount">0.00</th>
+                        <th scope="col" style="width: 5%;"></th>
+                    </tr>
+                    <input asp-for="TotalAmount" type="hidden" value="0" />
+                    <input asp-for="QuotationDetailsJson" type="hidden" value="0" />
+                </table>
+
+                <!-- Warning span -->
+                <div class="d-flex align-items-end justify-content-end pe-2 mb-1">
+                    <span class="text-danger" id="quotationSubmitWarning"></span>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-flex align-items-end justify-content-end pe-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-wallet2"></i> Create
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Add Products</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+
+                <div class="row">
+
+                    <!-- Products -->
+                    <div class="col-6">
+
+                        <label class="control-label" for="#ModalProductId">Products</label>
+                        <select class="form-select" asp-items="ViewBag.Products" id="ModalProductId">
+                            <option value="" selected>Choose the Product...</option>
+                        </select>
+                        <span class="text-danger mt-1" id="ModalProductIdWarning"></span>
+
+                    </div>
+
+                    <!-- Products Quantity -->
+                    <div class="col-6">
+                        <label class="control-label">Quantity</label>
+                        <input class="form-control" disabled id="ModalProductQuantity" type="number" min="0">
+                        <span class="text-danger mt-1" id="ModalProductQuantityWarning"></span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle-fill"></i> Close
+                </button>
+                <button type="submit" class="btn btn-primary" id="AddDetailButton">
+                    <i class="bi bi-box-seam-fill"></i> Add
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+
+    $(document).ready(function () {
+        //product list from controller
+        var products = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Products) as String);
+        //detail will save at here
+        var allProduct = [];
+
+        //Set max value of product
+        $('#ModalProductId').change(function (e) {
+            var productId = $('#ModalProductId').val();
+
+            //if something not null was selected
+            if (productId != "") {
+                var MaxValue = products.find(x => x.Id == productId).Quantity;
+
+                $('#ModalProductQuantity').prop('disabled', false);
+                $('#ModalProductQuantity').val(null);
+                $('#ModalProductQuantity').attr('max', MaxValue);
+            }
+            //if something null was selected
+            else if (productId == "") {
+                $('#ModalProductQuantity').prop('disabled', true);
+                $('#ModalProductQuantity').val(null);
+            }
+        });
+
+        //Add new row button when click
+        $('#AddNewRowButton').click(function (e) {
+
+            //reset the modal to default
+            $('#ModalProductId').val($("#ModalProductId option:first").val());
+            $('#ModalProductQuantity').val(null);
+            $('#ModalProductQuantity').prop('disabled', true);
+            $('#ModalProductIdWarning').text("");
+            $('#ModalProductQuantityWarning').text("");
+
+            //get all product id from all current detail
+            var productIdInArray = [];
+            for (var i = 0; i < allProduct.length; i++) {
+                productIdInArray.push(allProduct[i].Id);
+            }
+
+            //show all option
+            $("#ModalProductId > option").each(function () {
+                $(this).show();
+            });
+
+            //hide option that already in detail
+            for (var i = 0; i < productIdInArray.length; i++) {
+                $("#ModalProductId option[value=" + productIdInArray[i] + "]").hide();
+            }
+        });
+
+        //Validate all information on Modal and add detail
+        $('#AddDetailButton').click(function (e) {
+            var productId = $('#ModalProductId').val();
+            var productQuantity = $('#ModalProductQuantity').val();
+
+            //if user had select a valid product as option
+            if (productId != "") {
+                //if user select a valid quantity
+                if (productQuantity != null) {
+                    //if the quantity is bigger than 0
+                    if (productQuantity > 0) {
+                        //create an object
+                        var item = {
+                            Id: productId,
+                            Quantity: productQuantity,
+                            TotalAmount: addedProductTotal
+                        };
+
+                        //Add Quotation Details
+                        var addedProductId = productId;
+                        var addedProductName = products.find(x => x.Id == productId).Name;
+                        var addedProductQuantity = productQuantity;
+                        var addedProductPrice = products.find(x => x.Id == productId).Price;
+                        var addedProductTotal = (parseFloat(addedProductPrice) * parseFloat(addedProductQuantity)).toFixed(2);
+                        allProduct.push(item);
+                        //console.log(allProduct);
+
+                        //addRow
+                        $('#itemTable').append('<tr id="row_' + addedProductId + '"><td>' + addedProductId + '</td><td>' + addedProductName + '</td><td>' + addedProductQuantity + '</td><td>' + addedProductPrice + '</td><td>' + addedProductTotal + '</td><td><button data-Id="' + productId + '" class= "btn btn-danger removeButton" type="button" value="' + addedProductId + '"><i class="bi bi-trash-fill"></i></td ></tr> ');
+
+                        //hide modal
+                        $('#addModal').modal('hide');
+
+                        //Subtract number of quantity from db
+                        var MaxValue = products.find(x => x.Id == productId).Quantity;
+                        var RemainQuantity = MaxValue - productQuantity;
+                        products.find(x => x.Id == productId).Quantity = RemainQuantity;
+
+
+                        //Set Total Amount
+                        var totalAmount = $('#TotalAmount').val();
+                        var newTotalAmount = (parseFloat(addedProductTotal) + parseFloat(totalAmount)).toFixed(2);
+                        //console.log("actualtotal: " + newTotalAmount);
+                        $('#ShowTotalAmount').text(newTotalAmount);
+                        $('#TotalAmount').val(newTotalAmount);
+                        //console.log("showtotalamount: " + $('#ShowTotalAmount').text());
+                        //console.log("totalamount: " + $('#TotalAmount').val());
+
+                        //Clear at least one Quotation detail warning
+                        $('#quotationSubmitWarning').text("");
+                    }
+                    else //if the quantity of product is 0
+                    {
+                        $('#ModalProductQuantityWarning').text("Products quantity cannot be 0.");
+                    }
+
+                }
+                else //if the quantity of product is null
+                {
+                    $('#ModalProductQuantityWarning').text("Products quantity cannot be empty.");
+                }
+
+            }
+            else //if user didnt choose a valid product option then warning the user
+            {
+                $('#ModalProductIdWarning').text("Products cannot be empty.");
+            }
+
+
+            //insert detail into array
+            if (productId != "" && productQuantity != 0 && productQuantity != "") {
+
+            }
+            //If two input not valid
+            else if (productId == "" && productQuantity == 0 || productQuantity == "") {
+                $('#ModalProductIdWarning').text("Products cannot be empty.");
+                $('ModalProductQuantityWarning').text("Products quantity cannot be 0 or empty.");
+            }
+            //If Id input not valid
+            else if (productId == "" && productQuantity != 0 || productQuantity != "") {
+                $('#ModalProductIdWarning').text("Products cannot be empty.");
+            }
+            //If Quantity input not valid
+            else if (productId != "" && productQuantity == 0 || productQuantity == "") {
+                $('ModalProductQuantityWarning').text("Products quantity cannot be 0 or empty.");
+            }
+        });
+
+        //Delete Details
+        $("#itemTable").on("click", ".removeButton", function (e) {
+            var productId = $(this).val();
+            //console.log("Sub productId: "+productId);
+            //console.log(allProduct);
+
+            //remove row
+            $("#row_" + productId).remove();
+
+            //increase back the number of products
+            var addBackQuantity = allProduct.find(x => x.Id == productId).Quantity;
+            products.find(x => x.Id == productId).Quantity += addBackQuantity;
+            //console.log("Subtract");
+
+            //subtract total amount
+            var totalAmount = $('#TotalAmount').val();
+            var detailTotalAmount = allProduct.find(x => x.Id == productId).TotalAmount;
+            //console.log("oriTotalAmount: " + totalAmount);
+            //console.log("detailTotalAmount: "+detailTotalAmount);
+            var newTotalAmount = (parseFloat(totalAmount) - parseFloat(detailTotalAmount)).toFixed(2);
+            //if new value is NaN then turn to 0.00
+            if (isNaN(newTotalAmount)) {
+                newTotalAmount = parseFloat(0.00).toFixed(2);
+            }
+            $('#ShowTotalAmount').text(newTotalAmount);
+            $('#TotalAmount').val(newTotalAmount);
+            //console.log("aftertotal: " + newTotalAmount);
+            //console.log("showtotalamount: " + $('#ShowTotalAmount').text());
+            //console.log("totalamount: " + $('#TotalAmount').val());
+
+            //remove from array
+            var detailIndex = allProduct.findIndex(x => x.Id == productId);
+            //console.log(detailIndex);
+            allProduct.splice(detailIndex, 1);
+            //console.log(allProduct);
+
+        });
+
+        //Validate before create Quotation
+        $('#createQuotation').submit(function (e) {
+
+            event.preventDefault(); //this will prevent the default submit
+
+            //if no product is added then stop submit
+            if (allProduct.length == 0) {
+                //warning user
+                $('#quotationSubmitWarning').text("*Please add at least one product in quotation.");
+                //cancel submit
+                return false;
+            }
+            else //submit
+            {
+                var JsonString = JSON.stringify(allProduct);
+                $('#QuotationDetailsJson').val(JsonString);
+                $(this)[0].submit();
+            }
+        })
+
+        //set quotation id on the view page
+        var IdFromViewBag = '@ViewBag.NewQuotationId';
+        IdShown = String(IdFromViewBag).padStart(10, '0');
+        $('#IdShown').append(IdShown);
+    });
+
+</script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }

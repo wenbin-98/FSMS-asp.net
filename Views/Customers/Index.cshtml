@@ -1,0 +1,152 @@
+﻿@model IEnumerable<CustomersModel>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Title and Breadcrumb -->
+<div class="d-flex justify-content-between">
+    <h1 class="ps-4 pb-1 title">
+        <i class="bi bi-people-fill"></i> Customers
+    </h1>
+
+    <div class="d-flex align-items-center pe-4 pe-sm-0">
+        <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);"
+             aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item active" aria-current="page">Customers</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="card">
+        <!-- Card Header -->
+        <div class="d-flex card-header justify-content-end">
+            <a class="btn btn-primary" asp-action="Create" role="button"><i class="bi bi-person-plus-fill"></i> Create New</a>
+        </div>
+
+        <!-- Card Body and Table -->
+        <div class="card-body">
+
+            <!-- Table Column Name -->
+            <table class="table table-striped table-hover align-middle table-light table-responsive">
+                <thead>
+                    <tr class="text-center">
+                        <th scope="col">No.</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Hp No.</th>
+                        <th scope="col">Email Address</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Count() > 0)
+                    {
+                        <!-- No. in the table -->
+                        var no_in_table = 1;
+
+                        <!-- Print all customers in db -->
+                        @foreach (var item in Model)
+                        {
+                            <tr class="text-center">
+                                <td scope="row">@no_in_table</td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.HpNo)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Email)
+                                </td>
+                                <td class="d-flex justify-content-end">
+
+                                    <div class="pe-1">
+                                        <!-- View Button -->
+                                        <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@item.Id"
+                                   style="color: white">
+                                            <i class="bi bi-eye-fill" style="color: white" ;></i>
+                                            View
+                                        </a>
+                                    </div>
+
+                                    <div class="pe-1">
+                                        <!-- Edit Button -->
+                                        <a class="btn btn-success btn-sm" asp-action="Edit" asp-route-id="@item.Id">
+                                            <i class="bi bi-pencil-fill"></i> Edit
+                                        </a>
+                                    </div>
+
+                                    <!-- Delete Button -->
+                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" id="deleteButton"
+                                    data-bs-target="#deleteModal"
+                                    data-val="Are you sure want to delete @(item.Name)?"
+                                    data-id="@item.Id">
+                                        <i class="bi bi-trash-fill"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Increment the No. in the table -->
+                            @(no_in_table++)
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center">No Customers Found.</td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" tabindex="-1" id="deleteModal" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Title -->
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="modal-body"><p id="modal-body"></p></></div>
+
+            <!-- Modal Button -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+
+                <!-- Delete Button -->
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" id="hiddenId" >
+                    <button type="submit" class="btn btn-danger" data-bs-dismiss="modal" id="confirmDelete">Delete</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#deleteButton').on('click', function (event) {
+        var message = $('#deleteButton').data('val');
+        $(".modal-body").text(message);
+
+        var id = $('#deleteButton').data('id');
+        $("#hiddenId").val(id);
+
+        $('#confirmDelete').attr('formaction', '/Customers/Delete/' + id);
+    });
+</script>

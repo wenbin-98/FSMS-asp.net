@@ -1,0 +1,76 @@
+﻿@model FSMS_asp.net.Models.CustomersModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="col-12 p-2 pt-1">
+
+            <!-- Form -->
+            <form asp-action="Create">
+
+            <!--Validation Summary-->
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- Name -->
+            <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+            </div>
+
+            <br>
+
+            <div class="row">
+                <!-- H/P No -->
+                <div class="form-group col-md-6">
+                        <label asp-for="HpNo" class="control-label"></label>
+                        <input asp-for="HpNo" class="form-control" />
+                        <span asp-validation-for="HpNo" class="text-danger"></span>
+                </div>
+
+                <!-- Break line when small screen size -->
+                <div class="d-block d-md-none d-lg-none d-xl-none d-xxl-none">
+                    <br>
+                </div>
+
+                <!-- Email Address -->
+                <div class="form-group col-md-6">
+                        <label asp-for="Email" class="control-label"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            </div>
+
+            <br>
+
+            <!-- Address -->
+            <div class="form-group">
+                    <label asp-for="Address" class="control-label"></label>
+                    <textarea asp-for="Address" class="form-control"></textarea>
+                    <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+
+            <br>
+
+            <!-- Submit Button -->
+            <div class="d-flex align-items-end justify-content-end">
+                <button type="submit" class="btn btn-primary" name="createCustomer">
+                    <i class="bi bi-person-plus-fill"></i> Create
+                </button>
+            </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

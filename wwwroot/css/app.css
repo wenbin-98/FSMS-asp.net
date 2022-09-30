@@ -1,0 +1,117 @@
+﻿.title {
+    font-family: 'Slabo 13px', serif;
+}
+
+body {
+    font-family: 'Open Sans', serif;
+}
+
+.sideNavbar {
+    height: 100%;
+    /* 100% Full-height */
+    width: 0;
+    /* 0 width - change this with JavaScript */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Stay on top */
+    top: 0;
+    left: 0;
+    background-color: rgb(33, 37, 41);
+    /* Black*/
+    overflow-x: hidden;
+    /* Disable horizontal scroll */
+    padding-top: 20px;
+    /* Place content 60px from the top */
+    transition: 0.5s;
+    /* 0.5 second transition effect to slide in the sidenav */
+}
+
+.nav-link {
+    color: rgb(194, 199, 208);
+}
+
+.hover-pills > li > a:hover {
+    background-color: rgb(244, 246, 249, .2);
+    color: rgb(194, 199, 208);
+    width: 190px;
+    border-radius: 5px;
+}
+
+.navBar-title {
+    color: rgb(194, 199, 208);
+    font-family: 'Slabo 13px', serif;
+}
+
+.dropdown-menu {
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    -ms-transition: all 0.3s;
+    -o-transition: all 0.3s;
+    transition: all 0.3s;
+    background-color: rgb(33, 37, 41);
+}
+
+.dropdown-item {
+    color: rgb(194, 199, 208);
+    border-radius: 5px;
+}
+
+.dropdown-menu > li > a:hover :not(.logout) {
+    background-color: rgb(244, 246, 249, .2);
+    color: rgb(194, 199, 208);
+    width: 190px;
+    border-radius: 5px;
+}
+
+.dropdown-toggle:active,
+.show .dropdown-toggle {
+    color: rgb(194, 199, 208) !important;
+}
+
+.btn-close {
+    position: relative;
+    bottom: 7px;
+    right: 12px;
+}
+
+#workingArea {
+    transition: margin-left .5s;
+    padding: 20px;
+}
+
+.nav-item a {
+    color: rgb(194, 199, 208);
+}
+
+.active.nav {
+    background-color: #007BFF;
+    color: #FFFFFF !important;
+    width: 190px;
+    border-radius: 5px;
+}
+
+.nav-link.dropdown-toggle {
+    color: rgb(194, 199, 208);
+}
+
+.dropdown-menu.text-small.logout {
+    color: black;
+    background-color: white;
+}
+
+    .dropdown-menu.text-small.logout > li > a {
+        color: black;
+    }
+
+@media print {
+    .printFooter {
+        position: fixed;
+        bottom: 0;
+        width: 99%;
+    }
+    #printArea {
+        margin: 0;
+        padding: 0;
+    }
+}
