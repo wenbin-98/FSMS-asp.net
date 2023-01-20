@@ -27,8 +27,10 @@ namespace FSMS_asp.net.Controllers
             //get all users list
             var UsersList = await _context.Users.ToListAsync();
 
+            //list of users
             List<UsersIndexViewModel> Users = new List<UsersIndexViewModel>();
 
+            //insert each user to a list
             foreach (var item in UsersList)
             {
                 UsersIndexViewModel user = new UsersIndexViewModel();
@@ -43,6 +45,7 @@ namespace FSMS_asp.net.Controllers
                 Users.Add(user);
             }
 
+            //return view
             return _context.CustomersModel != null ?
                           View(Users) :
                           Problem("Entity set 'ApplicationDbContext.CustomersModel'  is null.");
@@ -70,24 +73,41 @@ namespace FSMS_asp.net.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(RegisterModel model)
+        public async Task<IActionResult> Create(UsersCreateViewModel model)
         {
+            //if model state is valid
             if (ModelState.IsValid)
             {
-                var result = await _accountRepository.CreateUserAsync(model);
+                //put all data in a user model
+                var user = new ApplicationUser()
+                {
+                    Email = model.Email,
+                    UserName = model.Email,
+                    DateOfBirth = model.DateOfBirth,
+                    Address = model.Address,
+                    PhoneNumber = model.PhoneNumber,
+                    Name = model.Name,
+                };
+
+                //create new user
+                var result = await _userManager.CreateAsync(user, model.Password);
+                //if not success
                 if (!result.Succeeded)
                 {
+                    //return error message
                     foreach (var errorMessage in result.Errors)
                     {
-                        ModelState.AddModelError("", errorMessage.Description);
+                        ModelState.AddModelError("ModelOnly", errorMessage.Description);
                     }
                     return View(model);
                 }
 
                 var NewUser = await _userManager.FindByEmailAsync(model.Email);
 
+                //set the user as staff
                 await _userManager.AddToRoleAsync(NewUser, "Staff");
 
+                //redirect to user index page
                 return RedirectToAction(nameof(Index));
             }
             return View(model);
@@ -108,6 +128,8 @@ namespace FSMS_asp.net.Controllers
             {
                 return NotFound();
             }
+
+            //return view and data of the specific user
             return View(User);
         }
 
@@ -123,8 +145,10 @@ namespace FSMS_asp.net.Controllers
                 return NotFound();
             }
 
+            //if model state is valid
             if (ModelState.IsValid)
             {
+                //try change value of user 
                 try
                 {
                     var user = await _userManager.FindByIdAsync(id);
@@ -132,6 +156,7 @@ namespace FSMS_asp.net.Controllers
                     user.Address = model.Address;
                     user.Name = model.Name;
                     user.DateOfBirth = model.DateOfBirth;
+                    //update user
                     await _userManager.UpdateAsync(user);
                     await _context.SaveChangesAsync();
                 }
@@ -139,6 +164,7 @@ namespace FSMS_asp.net.Controllers
                 {
                     
                 }
+                //redirect to user index
                 return RedirectToAction(nameof(Index));
             }
             return View(model);
@@ -153,20 +179,27 @@ namespace FSMS_asp.net.Controllers
             {
                 return Problem("Entity set 'dbo.AspNetUsers' is null.");
             }
+            //find the user by id
             var user = await _userManager.FindByIdAsync(id);
+            //if user is found then delete the user
             if (user != null)
             {
                 await _userManager.DeleteAsync(user);
             }
+            //return to user index
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> PromoteToAdmin(string id)
         {
+            //get the user from database
             var user = await _userManager.FindByIdAsync(id);
+            //remove the staff role from user
             await _userManager.RemoveFromRoleAsync(user, "Staff");
+            //set admin to user
             await _userManager.AddToRoleAsync(user, "Manager");
 
+            //redirect to user index
             return Redirect("/users/index");
         }
     }

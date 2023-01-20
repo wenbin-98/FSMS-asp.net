@@ -25,6 +25,7 @@ namespace FSMS_asp.net.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
+            //return view with all products data
               return _context.ProductsModel != null ? 
                           View(await _context.ProductsModel.ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.ProductsModel'  is null.");
@@ -37,20 +38,21 @@ namespace FSMS_asp.net.Controllers
             {
                 return NotFound();
             }
-
+            //find specific products by using id
             var productsModel = await _context.ProductsModel
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (productsModel == null)
             {
                 return NotFound();
             }
-
+            //return view with product's data
             return View(productsModel);
         }
 
         // GET: Products/Create
         public IActionResult Create()
         {
+            //return create view
             return View();
         }
 
@@ -61,9 +63,12 @@ namespace FSMS_asp.net.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProductsViewModel model)
         {
+            //if model state is valid
             if (ModelState.IsValid)
             {
+                //upload the image of products and get the uniqied file name of image
                 string uniqueFileName = ProcessUploadedFile(model);
+                //set the data of product in a model
                 ProductsModel products = new ProductsModel
                 {
                     Name = model.Name,
@@ -74,10 +79,13 @@ namespace FSMS_asp.net.Controllers
                     Image = uniqueFileName
                 };
 
+                //add the products into database
                 _context.Add(products);
                 await _context.SaveChangesAsync();
+                //redirect to products index page
                 return RedirectToAction(nameof(Index));
             }
+            //return view with submitted model
             return View(model);
         }
 
@@ -88,12 +96,13 @@ namespace FSMS_asp.net.Controllers
             {
                 return NotFound();
             }
-
+            //find specific product in database by using id
             var productsModel = await _context.ProductsModel.FindAsync(id);
             if (productsModel == null)
             {
                 return NotFound();
             }
+            //return view with product data
             return View(productsModel);
         }
 
@@ -111,6 +120,7 @@ namespace FSMS_asp.net.Controllers
 
             if (ModelState.IsValid)
             {
+                //try to update specific product with submitted data
                 try
                 {
                     var product = await _context.ProductsModel.FindAsync(model.Id);
@@ -119,17 +129,19 @@ namespace FSMS_asp.net.Controllers
                     product.Quantity = model.Quantity;
                     product.Description = model.Description;
                     product.UpdatedAt = DateTime.Now;
-
+                    //if product image is not null
                     if (product.Image != null)
                     {
+                        //if product image exist in storage, then delete the image
                         if (model.ExistingImage != null)
                         {
                             string filePath = Path.Combine(_webHostEnvironment.WebRootPath, "images/Products Image", model.ExistingImage);
                             System.IO.File.Delete(filePath);
                         }
+                        //save the image
                         product.Image = ProcessUploadedFile(model);
                     }
-
+                    //update the information of product in database
                     _context.Update(product);
                     await _context.SaveChangesAsync();
                 }
@@ -144,27 +156,11 @@ namespace FSMS_asp.net.Controllers
                         throw;
                     }
                 }
+                //redirect to product index page
                 return RedirectToAction(nameof(Index));
             }
+            //return edit view with submitted data
             return View(model);
-        }
-
-        // GET: Products/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.ProductsModel == null)
-            {
-                return NotFound();
-            }
-
-            var productsModel = await _context.ProductsModel
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (productsModel == null)
-            {
-                return NotFound();
-            }
-
-            return View(productsModel);
         }
 
         // POST: Products/Delete/5
@@ -176,9 +172,11 @@ namespace FSMS_asp.net.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.ProductsModel'  is null.");
             }
+            //find specific product by using id
             var productsModel = await _context.ProductsModel.FindAsync(id);
             if (productsModel != null)
             {
+                //try to delete the image of products if image of products exists
                 try
                 {
                     string imagePath = productsModel.Image.Remove(0, 1);
@@ -196,13 +194,14 @@ namespace FSMS_asp.net.Controllers
                 } 
                 catch 
                 {
+                    //remove the product from database
                     _context.ProductsModel.Remove(productsModel);
                     await _context.SaveChangesAsync();
                 }
                 
             }
             
-            
+            //redirect to product index page
             return RedirectToAction(nameof(Index));
         }
 
@@ -215,8 +214,10 @@ namespace FSMS_asp.net.Controllers
         {
             string uniqueFileName = null;
 
+            //if image of product is uploaded
             if (model.Image != null)
             {
+                //create a unique file name for product image
                 string folder = "images/Products Image/";
                 folder += Guid.NewGuid().ToString() + "_" + model.Image.FileName;
                 string serverFolder = Path.Combine(_webHostEnvironment.WebRootPath, folder);
@@ -225,12 +226,13 @@ namespace FSMS_asp.net.Controllers
                 //string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "/images/Products Image");
                 //uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Image.FileName;
                 //string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                //put the image in the storage
                 using (var fileStream = new FileStream(serverFolder, FileMode.Create))
                 {
                     model.Image.CopyTo(fileStream);
                 }
             }
-
+            //return the file name of image
             return uniqueFileName;
         }
     }

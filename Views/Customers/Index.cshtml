@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<CustomersModel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Customers";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -92,7 +92,7 @@
                             </tr>
 
                             <!-- Increment the No. in the table -->
-                            @(no_in_table++)
+                            no_in_table++;
                         }
                     }
                     else

@@ -1,6 +1,8 @@
-﻿using FSMS_asp.net.Models.Login;
+﻿using FSMS_asp.net.Models;
+using FSMS_asp.net.Models.Login;
 using FSMS_asp.net.Repository;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FSMS_asp.net.Controllers
@@ -8,36 +10,44 @@ namespace FSMS_asp.net.Controllers
     public class LoginController : Controller
     {
         private readonly IAccountRepository _accountRepository;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public LoginController(IAccountRepository accountRepository)
+        public LoginController(IAccountRepository accountRepository,  SignInManager<ApplicationUser> signInManager)
         {
             _accountRepository = accountRepository;
+            _signInManager = signInManager;
         }
 
         public IActionResult Index()
         {
+            //return login view
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Login(LoginModel model)
         {
+            //if model state is valid
             if (ModelState.IsValid)
             {
-                var result = await _accountRepository.PasswordSignInAsync(model);
+                //try to login the user
+                var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, true);
+                //if success then redirect to homepage
                 if (result.Succeeded)
                 {
                     return RedirectToAction("Index", "Home");
                 }
+                //if failed then showed invalid credentials
                 if (result.IsNotAllowed)
                 {
                     ModelState.AddModelError("", "Invalid credentials.");
                 }
+                //if lockout then shows account is blocks
                 else if (result.IsLockedOut)
                 {
                     ModelState.AddModelError("", "Account is blocked, Try after some time.");
                 }
-
+                //if failed then shows account is not  found
                 ModelState.AddModelError("", "Account is not found.");
 
             }
@@ -48,7 +58,9 @@ namespace FSMS_asp.net.Controllers
         [Route("Logout")]
         public async Task<IActionResult> Logout()
         {
-            await _accountRepository.SignOutAsync();
+            //logout the current user
+            await _signInManager.SignOutAsync();
+            //redirect to login index
             return RedirectToAction("Index", "Login");
         }
 

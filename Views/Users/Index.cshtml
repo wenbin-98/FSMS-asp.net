@@ -8,7 +8,7 @@
 <!-- Title and Breadcrumb -->
 <div class="d-flex justify-content-between">
     <h1 class="ps-4 pb-1 title">
-        <i class="bi bi-box-seam-fill"></i> Users
+        <i class="bi bi-person-circle me-1 ms-2"></i> Users
     </h1>
 
     <div class="d-flex align-items-center pe-4 pe-sm-0">
@@ -80,26 +80,48 @@
 
                                     <!-- Delete Button -->
                                     <div class="pe-1">
-                                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" id="deleteButton"
+                                        @if (Model.Count() == 1)
+                                        {
+                                            <button type="button" class="btn btn-danger btn-sm deleteButton" data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal"
+                                        data-val="Are you sure want to delete @(item.Name)?"
+                                        data-id="@item.Id" disabled>
+                                                <i class="bi bi-trash-fill"></i> Delete
+                                            </button>
+                                        }
+                                        else {
+                                            <button type="button" class="btn btn-danger btn-sm deleteButton" data-bs-toggle="modal"
                                         data-bs-target="#deleteModal"
                                         data-val="Are you sure want to delete @(item.Name)?"
                                         data-id="@item.Id">
-                                            <i class="bi bi-trash-fill"></i> Delete
-                                        </button>
+                                                <i class="bi bi-trash-fill"></i> Delete
+                                            </button>
+                                        }
                                     </div>
 
                                     <!-- Set Roles -->
                                     <div class="pe-1">
-                                        <button type="button" class="btn btn-warning btn-sm" data-val="Are you sure want to promote @(item.Name) to Manager?"
+                                        @if (@item.Role == "Manager")
+                                        {
+                                            <button type="button" class="btn btn-warning btn-sm" data-val="Are you sure want to promote @(item.Name) to Manager?"
+                                        data-id="@item.Id" id="promoteButton" data-bs-toggle="modal" data-bs-target="#roleModal" disabled>
+                                                <i class="bi bi-wrench-adjustable"></i> Roles
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-warning btn-sm" data-val="Are you sure want to promote @(item.Name) to Manager?"
                                         data-id="@item.Id" id="promoteButton" data-bs-toggle="modal" data-bs-target="#roleModal">
-                                            <i class="bi bi-wrench-adjustable"></i> Roles
-                                        </button>
+                                                <i class="bi bi-wrench-adjustable"></i> Roles
+                                            </button>
+                                        }
+
                                     </div>
                                 </td>
                             </tr>
 
                             <!-- Increment the No. in the table -->
-                            @(no_in_table++)
+                            no_in_table++;
                         }
                     }
                     else
@@ -178,14 +200,14 @@
 <script>
 
     $(document).ready(function () {
-        $('#deleteButton').on('click', function (event) {
-            var message = $('#deleteButton').data('val');
-            $(".modal-body").text(message);
+        $('.deleteButton').on('click', function (event) {
+            var message = $(this).data('val');
+            $("#modal-body").text(message);
 
-            var id = $('#deleteButton').data('id');
+            var id = $(this).data('id');
             $("#hiddenId").val(id);
 
-            $('#confirmDelete').attr('formaction', '/Users/Delete/' + id);
+            $('#confirmDelete').attr('formaction', '/Products/Delete/' + id);
         });
 
         $('#promoteButton').on('click', function (event) {

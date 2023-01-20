@@ -22,6 +22,7 @@ namespace FSMS_asp.net.Controllers
         // GET: Customers
         public async Task<IActionResult> Index()
         {
+            //return view with all customers data
               return _context.CustomersModel != null ? 
                           View(await _context.CustomersModel.ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.CustomersModel'  is null.");
@@ -34,20 +35,21 @@ namespace FSMS_asp.net.Controllers
             {
                 return NotFound();
             }
-
+            //find customer by id
             var customersModel = await _context.CustomersModel
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (customersModel == null)
             {
                 return NotFound();
             }
-
+            //return view with customer data
             return View(customersModel);
         }
 
         // GET: Customers/Create
         public IActionResult Create()
         {
+            //return create customer view
             return View();
         }
 
@@ -58,12 +60,15 @@ namespace FSMS_asp.net.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,HpNo,Address,Email")] CustomersModel customersModel)
         {
+            //if model state is valid
             if (ModelState.IsValid)
             {
+                //add customer to database
                 _context.Add(customersModel);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            //return view with submitted data
             return View(customersModel);
         }
 
@@ -74,12 +79,13 @@ namespace FSMS_asp.net.Controllers
             {
                 return NotFound();
             }
-
+            //find specific customers by id
             var customersModel = await _context.CustomersModel.FindAsync(id);
             if (customersModel == null)
             {
                 return NotFound();
             }
+            //return view with customer data
             return View(customersModel);
         }
 
@@ -97,6 +103,7 @@ namespace FSMS_asp.net.Controllers
 
             if (ModelState.IsValid)
             {
+                //try to update customer with submitted data
                 try
                 {
                     _context.Update(customersModel);
@@ -113,26 +120,10 @@ namespace FSMS_asp.net.Controllers
                         throw;
                     }
                 }
+                //redirect to customer index
                 return RedirectToAction(nameof(Index));
             }
-            return View(customersModel);
-        }
-
-        // GET: Customers/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.CustomersModel == null)
-            {
-                return NotFound();
-            }
-
-            var customersModel = await _context.CustomersModel
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (customersModel == null)
-            {
-                return NotFound();
-            }
-
+            //return edit view with submitted data
             return View(customersModel);
         }
 
@@ -145,13 +136,16 @@ namespace FSMS_asp.net.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.CustomersModel'  is null.");
             }
+            //find customer by id
             var customersModel = await _context.CustomersModel.FindAsync(id);
+            //remove the customer from database
             if (customersModel != null)
             {
                 _context.CustomersModel.Remove(customersModel);
             }
             
             await _context.SaveChangesAsync();
+            //redirect to customer index page
             return RedirectToAction(nameof(Index));
         }
 

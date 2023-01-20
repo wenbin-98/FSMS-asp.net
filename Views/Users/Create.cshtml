@@ -31,12 +31,24 @@
                 <!--Validation Summary-->
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                <!-- Name -->
-                <div class="form-row">
-                    <div class="form-group">
+                <div class="row">
+                    <!-- Name -->
+                    <div class="form-group col-md-6">
                         <label asp-for="Name" class="control-label"></label>
                         <input asp-for="Name" class="form-control" />
                         <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <!-- Break line when small screen size -->
+                    <div class="d-block d-md-none d-lg-none d-xl-none d-xxl-none">
+                        <br>
+                    </div>
+
+                    <!-- user name -->
+                    <div class="form-group col-md-6">
+                        <label asp-for="UserName" class="control-label"></label>
+                        <input asp-for="UserName" class="form-control" />
+                        <span asp-validation-for="UserName" class="text-danger"></span>
                     </div>
                 </div>
 
