@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FSMS_asp.net.Models.Delivery_Order
 {
-    [Table("DOrderDetails")]
+    [Table("DOrder Details")]
     public class DOrderDetailsModel
     {
         [Key]

@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FSMS_asp.net.Models
 {
+    [Table("Invoice Details")]
     public class InvoiceDetailsModel
     {
         [Key]

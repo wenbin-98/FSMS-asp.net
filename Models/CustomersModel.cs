@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FSMS_asp.net.Models
 {
+    [Table("Customers")]
     public class CustomersModel
     {
         [Key]

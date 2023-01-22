@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace FSMS_asp.net.Models
 {
+    [Table("Invoices")]
     public class InvoicesModel
     {
         [Key]

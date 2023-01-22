@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FSMS_asp.net.Models.Quotation
 {
-    [Table("QuotationDetails")]
+    [Table("Quotation Details")]
     public class QuotationDetailsModel
     {
         [Key]
