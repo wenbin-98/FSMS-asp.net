@@ -46,7 +46,7 @@
                 @{
                     int i = 1;
                 }
-                @foreach(var item in Model.Invoices)
+                @foreach (var item in Model.Invoices)
                 {
                     <tr class="text-center">
                         <td style="width: 5%;"> @i </td>
@@ -54,8 +54,9 @@
                         <td style="width: 20%;">INV @item.Id.ToString("0000000000") </td>
                         <td style="width: 20%;"> @item.CustomerName </td>
                         <td style="width: 20%;"></td>
-                        <td style="width: 20%;"> @item.TotalAmount.ToString("0.00") </td></tr>
-                        @(i++)
+                        <td style="width: 20%;"> @item.TotalAmount.ToString("0.00") </td>
+                    </tr>
+                    i++;
                 }
             </tbody>
 
@@ -96,3 +97,12 @@ else
         </div>
     </div>
 }
+
+<script>
+    $(document).ready(function () {
+        //Print Area
+        $("#printButton").on("click", function () {
+            $("#printArea").printThis();
+        })
+    })
+</script>

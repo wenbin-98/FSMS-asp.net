@@ -22,7 +22,7 @@ builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IUserService, FSMS_asp.net.Services.UserService>();
 builder.Services.Configure<IdentityOptions>(options =>
 {
-    options.Password.RequiredLength = 5;
+    options.Password.RequiredLength = 4;
     options.Password.RequiredUniqueChars = 0;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireDigit = false;
@@ -37,8 +37,6 @@ builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
 {
     options.TokenLifespan = TimeSpan.FromDays(1);
 });
-builder.Services.Configure<SMTPConfigModel>(builder.Configuration.GetSection("SMTPConfig"));
-//builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.ConfigureApplicationCookie(config =>
 {

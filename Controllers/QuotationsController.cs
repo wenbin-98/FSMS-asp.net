@@ -19,8 +19,10 @@ namespace FSMS_asp.net.Controllers
         // GET: Quotations
         public async Task<IActionResult> Index()
         {
+            //get all data of quotation
             var model = await _context.QuotationsModel.ToListAsync();
 
+            //return view with data of quotation
             return _context.QuotationsModel != null ?
                         View(model) :
                         Problem("Entity set 'ApplicationDbContext.InvoicesModel'  is null.");
@@ -29,18 +31,16 @@ namespace FSMS_asp.net.Controllers
         // GET: Quotations/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.QuotationsModel == null)
-            {
-                return NotFound();
-            }
-
+            //find the specific quotation by using id
             var quotationsModel = await _context.QuotationsModel.Where(x => x.Id == id).FirstOrDefaultAsync();
 
+            //if specific quotation not found then return not found page
             if (quotationsModel == null)
             {
                 return NotFound();
             }
 
+            //include all quotation data in a model
             var quotationsViewModel = new QuotationsViewModel
             {
                 Id = quotationsModel.Id,
@@ -56,19 +56,21 @@ namespace FSMS_asp.net.Controllers
                 CancelStatus = quotationsModel.CancelStatus,
             };
 
+            //return quotation data with quotation detail page
             return View(quotationsViewModel);
         }
 
         // GET: Quotations/Create
         public async Task<IActionResult> Create()
         {
+            //get all customer name (for dropdown in quotation)
             ViewBag.Customers = _context.CustomersModel.ToList().Select(x => new SelectListItem()
             {
                 Text = x.Name,
                 Value = x.Id.ToString()
             }).ToList();
 
-
+            //get all product name (for dropdown in quotation)
             ViewBag.Products = _context.ProductsModel.ToList().Select(x => new SelectListItem()
             {
                 Text = x.Name,
@@ -76,7 +78,7 @@ namespace FSMS_asp.net.Controllers
             }).ToList();
 
             int NewQuotationId = 0;
-
+            //set the id of quotation (use to show the current quotation id in the page)
             try
             {
                 NewQuotationId = await _context.QuotationsModel.MaxAsync(x => x.Id) + 1;
@@ -87,11 +89,13 @@ namespace FSMS_asp.net.Controllers
                 ViewBag.NewQuotationId = 0;
             }
 
+            //include all products data in the model
             QuotationsViewModel quotationsViewModel = new QuotationsViewModel
             {
                 Products = await _context.ProductsModel.ToListAsync()
             };
 
+            //return all products and customer data to the create quotation view 
             return View(quotationsViewModel);
         }
 
@@ -140,10 +144,13 @@ namespace FSMS_asp.net.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(QuotationsViewModel model)
         {
+            //if model state is valid
             if (ModelState.IsValid)
             {
+                //get the data of the customer chosen in the quotation
                 var Customer = _context.CustomersModel.Where(x => x.Id == model.CustomersId).FirstOrDefault();
 
+                //assign the information of quotation into a model
                 QuotationsModel Quotation = new QuotationsModel
                 {
                     Id = model.Id,
@@ -156,42 +163,44 @@ namespace FSMS_asp.net.Controllers
                     TotalAmount = model.TotalAmount,
                     CancelStatus = false
                 };
-
+                //add all data of quotation into the database
                 _context.Add(Quotation);
                 await _context.SaveChangesAsync();
-
+                //add all quotation detail into database
                 await AddQuotationDetail(JsonConvert.DeserializeObject<List<QuotationDetailsPost>>(model.QuotationDetailsJson));
+                //redirect back to quotation index page
                 return RedirectToAction(nameof(Index));
             }
+            //return submitted data to create invoice page
             return View(model);
         }
 
         // GET: Quotations/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.QuotationsModel == null)
-            {
-                return NotFound();
-            }
-
+            //find specific quotation by using id
             var quotationsModel = await _context.QuotationsModel.FindAsync(id);
+            //if quotation not found then return quotation not found page
             if (quotationsModel == null)
             {
                 return NotFound();
             }
 
+            //get all customer name (for dropdown in quotation)
             ViewBag.Customers = _context.CustomersModel.ToList().Select(x => new SelectListItem()
             {
                 Text = x.Name,
                 Value = x.Id.ToString()
             }).ToList();
 
+            //get all products name (for dropdown in quotation)
             ViewBag.Products = _context.ProductsModel.ToList().Select(x => new SelectListItem()
             {
                 Text = x.Name,
                 Value = x.Id.ToString()
             }).ToList();
 
+            //include all data of quotation in a model
             var quotationsViewModel = new QuotationsViewModel
             {
                 Id = quotationsModel.Id,
@@ -205,7 +214,7 @@ namespace FSMS_asp.net.Controllers
                 Products = await _context.ProductsModel.ToListAsync(),
                 QuotationDetails = await _context.QuotationDetailsModel.Where(x => x.QuotationId == id).ToListAsync()
             };
-
+            //set the id of the quotation
             int NewQuotationId = 0;
 
             try
@@ -217,7 +226,7 @@ namespace FSMS_asp.net.Controllers
             {
                 ViewBag.NewQuotationId = 0;
             }
-
+            //return view with data of quotation
             return View(quotationsViewModel);
         }
 
@@ -228,15 +237,13 @@ namespace FSMS_asp.net.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, QuotationsViewModel model)
         {
-            if (id != model.Id)
-            {
-                return NotFound();
-            }
-
+            //if model state is valid
             if (ModelState.IsValid)
             {
+                //get the customer of the quotation
                 var Customer = _context.CustomersModel.Where(x => x.Id == model.CustomersId).FirstOrDefault();
 
+                //put all information into a model
                 QuotationsModel Quotation = new QuotationsModel
                 {
                     Id = model.Id,
@@ -250,42 +257,46 @@ namespace FSMS_asp.net.Controllers
                     CancelStatus = false
                 };
 
+                //update the quotation
                 _context.Update(Quotation);
                 await _context.SaveChangesAsync();
-
+                //remove all quotation detail
                 await RemoveQuotationDetail(id);
                 try
                 {
+                    //add all quotation detail into database
                     await AddQuotationDetail(JsonConvert.DeserializeObject<List<QuotationDetailsPost>>(model.QuotationDetailsJson));
                 }
                 catch
                 {
 
                 }
+                //redirect to quotation index page
                 return RedirectToAction(nameof(Index));
             }
+            //return all submitted data to edit quotation page
             return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> Cancel(int? id)
         {
-            if (id == null || _context.QuotationsModel == null)
-            {
-                return NotFound();
-            }
-
+            //find the specific quotation by using id
             var quotationsModel = await _context.QuotationsModel
                 .FirstOrDefaultAsync(m => m.Id == id);
+            //if quotation not found then return quotation not found page
             if (quotationsModel == null)
             {
                 return NotFound();
             }
 
+            //set quotation cancel status to true
             quotationsModel.CancelStatus = true;
+            //update the specific quotation
             _context.QuotationsModel.Update(quotationsModel);
             await _context.SaveChangesAsync();
 
+            //redirect to quotation index page
             return Redirect("/quotations/index"); ;
         }
     }

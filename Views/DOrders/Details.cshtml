@@ -9,7 +9,7 @@
 <!-- Title and Breadcrumbs -->
 <div class="d-flex justify-content-between">
     <h1 class="ps-4 pb-1 title">
-        <i class="bi bi-cash-coin"></i> Delivery Order Details
+        <i class="bi bi-truck me-1 ms-2"></i> Delivery Order Details
     </h1>
 
     <div class="d-flex align-items-center pe-4 pe-sm-0">
@@ -77,23 +77,32 @@
                                     @Html.ValueFor(model => model.Date, "{0:dd/MM/yyyy}")
                                 </td>
                             </tr>
-                            <tr>
-                                <th scope="row" style="width: 30%">Status: </th>
-                                <td colspan="2" style="width: 70%">
-                                    <div id="dOrderStatus"></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row" style="width: 30%">Currency: </th>
-                                <td colspan="2" style="width: 70%">
-                                    Ringgit Malaysia (RM)
-                                </td>
-                            </tr>
                     </table>
                 </div>
             </div>
 
+            <!-- Line -->
+            <hr style="height:2px;border-width:0;color:gray;background-color:gray; opacity: 100%" class="mt-1 mb-1">
 
+            <!-- PO No., Ref No., and Currency -->
+            <table class="table table-borderless mb-0">
+                <tbody>
+                    <tr style="height: 5px">
+                        <td style="width: 10%; " class="pt-0 pb-0">PO No.:</td>
+                        <td style="width: 40%; " class="pt-0 pb-0">@Model.PoNo</td>
+                        <td style="width: 10%; " class="pt-0 pb-0"></td>
+                        <td style="width: 20%; " class="pt-0 pb-0">DO Status:</td>
+                        <td style="width: 20%; " class="pt-0 pb-0"><p id="dOrderStatus"></p></td>
+                    </tr>
+                    <tr style="height: 5px">
+                        <td style="width: 10%; " class="pt-0 pb-0">Ref No.:</td>
+                        <td style="width: 40%; " class="pt-0 pb-0">@Model.RefNo</td>
+                        <td style="width: 10%; " class="pt-0 pb-0"></td>
+                        <td style="width: 20%; " class="pt-0 pb-0">Currency:</td>
+                        <td style="width: 20%; " class="pt-0 pb-0">Ringgit Malaysia (RM)</td>
+                    </tr>
+                </tbody>
+            </table>
 
             <!-- Line -->
             <hr class="mb-0 mt-0" style="border-top: 2px solid; border-color: black; opacity: 100%" />
@@ -129,13 +138,13 @@
                 <table style="max-height: 20px" class="table table-borderless">
                     <tr>
                         <th scope="col" style="width: 10%;"></th>
-                    <th scope="col" style="width: 10%;" ></th>
+                        <th scope="col" style="width: 10%;"></th>
                         <th scope="col" style="width: 60%;" class="text-end">Total Quantity: </th>
-                    <th scope="col" style="width: 10%; border-bottom-style: solid" class="text-center"><u><b id="showTotalQuantity"></b></u></th>
-                    <th scope="col" style="width: 10%;"></th>
+                        <th scope="col" style="width: 10%; border-bottom-style: solid" class="text-center"><u><b id="showTotalQuantity"></b></u></th>
+                        <th scope="col" style="width: 10%;"></th>
                     </tr>
                 </table>
-                
+
                 <!-- Signature -->
                 <div class="d-flex justify-content-start">
                     <div class="text-center">
@@ -183,7 +192,7 @@
             row += '<td style="width: 10%;">' + parseInt(i + 1) + '</td>';
             row += '<td style="width: 10%;">' + productId + '</td>';
             row += '<td style="width: 60%;">' + productName + '</td>';
-            row += '<td style="width: 10%;">'+productQuantity+'</td>';
+            row += '<td style="width: 10%;">' + productQuantity + '</td>';
             row += '<td style="width: 10%;">Units</td >';
             row += '</tr>';
 
@@ -195,7 +204,7 @@
             $('#showTotalQuantity').text(totalQuantity);
         };
 
-        //invoice status
+        //DO status
         if (@Model.CancelStatus.ToString().ToLower() == false) {
             $('#dOrderStatus').text('Active');
         }

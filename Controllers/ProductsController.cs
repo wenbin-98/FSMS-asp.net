@@ -130,12 +130,12 @@ namespace FSMS_asp.net.Controllers
                     product.Description = model.Description;
                     product.UpdatedAt = DateTime.Now;
                     //if product image is not null
-                    if (product.Image != null)
+                    if (model.Image != null )
                     {
                         //if product image exist in storage, then delete the image
-                        if (model.ExistingImage != null)
+                        if (product.Image != null)
                         {
-                            string filePath = Path.Combine(_webHostEnvironment.WebRootPath, "images/Products Image", model.ExistingImage);
+                            string filePath = Path.Combine(_webHostEnvironment.WebRootPath, product.Image);
                             System.IO.File.Delete(filePath);
                         }
                         //save the image
@@ -223,9 +223,6 @@ namespace FSMS_asp.net.Controllers
                 string serverFolder = Path.Combine(_webHostEnvironment.WebRootPath, folder);
                 uniqueFileName = "/" + folder;
 
-                //string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "/images/Products Image");
-                //uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Image.FileName;
-                //string filePath = Path.Combine(uploadsFolder, uniqueFileName);
                 //put the image in the storage
                 using (var fileStream = new FileStream(serverFolder, FileMode.Create))
                 {

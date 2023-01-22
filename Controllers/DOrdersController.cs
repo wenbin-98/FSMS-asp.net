@@ -25,8 +25,10 @@ namespace FSMS_asp.net.Controllers
         // GET: DOrders
         public async Task<IActionResult> Index()
         {
+            //get all data of DO
             var model = await _context.DOrdersModel.ToListAsync();
 
+            //return view with data of DO
             return _context.DOrdersModel != null ?
                         View(model) :
                         Problem("Entity set 'ApplicationDbContext.DOrdersModel'  is null.");
@@ -35,18 +37,16 @@ namespace FSMS_asp.net.Controllers
         // GET: DOrders/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.DOrdersModel == null)
-            {
-                return NotFound();
-            }
-
+            //find the specific DO by using id
             var dOrdersModel = await _context.DOrdersModel.Where(x => x.Id == id).FirstOrDefaultAsync();
 
+            //if specific DO not found then return not found page
             if (dOrdersModel == null)
             {
                 return NotFound();
             }
 
+            //include all DO data in a model
             var dOrdersViewModel = new DOrdersViewModel
             {
                 Id = dOrdersModel.Id,
@@ -65,20 +65,21 @@ namespace FSMS_asp.net.Controllers
                 CancelStatus = dOrdersModel.CancelStatus,
             };
 
+            //return DO data with DO detail page
             return View(dOrdersViewModel);
         }
 
         // GET: DOrders/Create
         public async Task<IActionResult> Create()
         {
-
+            //get all customer name (for dropdown in DO)
             ViewBag.Customers = _context.CustomersModel.ToList().Select(x => new SelectListItem()
             {
                 Text = x.Name,
                 Value = x.Id.ToString()
             }).ToList();
 
-
+            //get all product name (for dropdown in DO)
             ViewBag.Products = _context.ProductsModel.ToList().Select(x => new SelectListItem()
             {
                 Text = x.Name,
@@ -86,22 +87,24 @@ namespace FSMS_asp.net.Controllers
             }).ToList();
 
             int NewDOrderId = 0;
-
+            //set the id of DO (use to show the current DO id in the page)
             try
             {
                 NewDOrderId = await _context.DOrdersModel.MaxAsync(x => x.Id) + 1;
-                ViewBag.NewDOrderId = NewDOrderId;
+                ViewBag.NewDOrderId = NewDOrderId.ToString("0000000000");
             }
             catch
             {
-                ViewBag.NewDOrderId = 0;
+                ViewBag.NewDOrderId = "0000000000";
             }
 
+            //include all products data in the model
             DOrdersViewModel dOrdersViewModel = new DOrdersViewModel
             {
                 Products = await _context.ProductsModel.ToListAsync()
             };
 
+            //return all products and customer data to the create DO view 
             return View(dOrdersViewModel);
         }
 
@@ -150,10 +153,13 @@ namespace FSMS_asp.net.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(DOrdersViewModel model)
         {
+            //if model state is valid
             if (ModelState.IsValid)
             {
+                //get the data of the customer chosen in the DO
                 var Customer = _context.CustomersModel.Where(x => x.Id == model.CustomersId).FirstOrDefault();
 
+                //assign the information of DO into a model
                 DOrdersModel DOrders = new DOrdersModel
                 {
                     Id = model.Id,
@@ -169,42 +175,44 @@ namespace FSMS_asp.net.Controllers
                     RefNo = model.RefNo,
                     PoNo = model.PoNo
                 };
-
+                //add all data of DO into the database
                 _context.Add(DOrders);
                 await _context.SaveChangesAsync();
-
+                //add all DO detail into database
                 await AddDOrderDetail(JsonConvert.DeserializeObject<List<DOrderDetailsPost>>(model.DOrderDetailsJson));
+                //redirect back to DO index page
                 return RedirectToAction(nameof(Index));
             }
+            //return submitted data to create DO page
             return View(model);
         }
 
         // GET: DOrders/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.DOrdersModel == null)
-            {
-                return NotFound();
-            }
-
+            //find specific DO by using id
             var dOrdersModel = await _context.DOrdersModel.FindAsync(id);
+            //if DO not found then return DO not found page
             if (dOrdersModel == null)
             {
                 return NotFound();
             }
 
+            //get all customer name (for dropdown in DO)
             ViewBag.Customers = _context.CustomersModel.ToList().Select(x => new SelectListItem()
             {
                 Text = x.Name,
                 Value = x.Id.ToString()
             }).ToList();
 
+            //get all products name (for dropdown in DO)
             ViewBag.Products = _context.ProductsModel.ToList().Select(x => new SelectListItem()
             {
                 Text = x.Name,
                 Value = x.Id.ToString()
             }).ToList();
 
+            //include all data of DO in a model
             var dOrdersViewModel = new DOrdersViewModel
             {
                 Id = dOrdersModel.Id,
@@ -221,7 +229,7 @@ namespace FSMS_asp.net.Controllers
                 Products = await _context.ProductsModel.ToListAsync(),
                 DOrderDetails = await _context.DOrderDetailsModel.Where(x => x.DOrdersId == id).ToListAsync()
             };
-
+            //set the id of the DO
             int NewDOrdersId = 0;
 
             try
@@ -233,7 +241,7 @@ namespace FSMS_asp.net.Controllers
             {
                 ViewBag.NewDOrdersId = 0;
             }
-
+            //return view with data of DO
             return View(dOrdersViewModel);
         }
 
@@ -244,15 +252,13 @@ namespace FSMS_asp.net.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, DOrdersViewModel model)
         {
-            if (id != model.Id)
-            {
-                return NotFound();
-            }
-
+            //if model state is valid
             if (ModelState.IsValid)
             {
+                //get the customer of the DO
                 var Customer = _context.CustomersModel.Where(x => x.Id == model.CustomersId).FirstOrDefault();
 
+                //put all information into a model
                 DOrdersModel dOrders = new DOrdersModel
                 {
                     Id = model.Id,
@@ -269,42 +275,46 @@ namespace FSMS_asp.net.Controllers
                     PoNo = model.PoNo
                 };
 
+                //update the DO
                 _context.Update(dOrders);
                 await _context.SaveChangesAsync();
-
+                //remove all DO detail
                 await RemoveDOrderDetail(id);
                 try
                 {
+                    //add all DO detail into database
                     await AddDOrderDetail(JsonConvert.DeserializeObject<List<DOrderDetailsPost>>(model.DOrderDetailsJson));
                 }
                 catch
                 {
 
                 }
+                //redirect to DO index page
                 return RedirectToAction(nameof(Index));
             }
+            //return all submitted data to edit DO page
             return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> Cancel(int? id)
         {
-            if (id == null || _context.DOrdersModel == null)
-            {
-                return NotFound();
-            }
-
+            //find the specific DO by using id
             var dOrdersModel = await _context.DOrdersModel
                 .FirstOrDefaultAsync(m => m.Id == id);
+            //if DO not found then return DO not found page
             if (dOrdersModel == null)
             {
                 return NotFound();
             }
 
+            //set DO cancel status to true
             dOrdersModel.CancelStatus = true;
+            //update the specific DO
             _context.DOrdersModel.Update(dOrdersModel);
             await _context.SaveChangesAsync();
 
+            //redirect to DO index page
             return Redirect("/dOrders/index"); ;
         }
     }

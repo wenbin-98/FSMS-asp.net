@@ -89,15 +89,15 @@
                                         @{
                                             if (item.CancelStatus == true)
                                             {
-                                                    <button type="button" class="btn btn-danger btn-sm disabled" data-bs-toggle="modal"
-                                                data-bs-target="#cancelModal" id="cancelButton" data-id="@item.Id" data-val="Are you sure want to cancel DO @item.Id.ToString("0000000000")? The canceled delivery order will unable to edit in the future.">
+                                                    <button type="button" class="btn btn-danger btn-sm disabled cancelButton" data-bs-toggle="modal"
+                                                data-bs-target="#cancelModal" data-id="@item.Id" data-val="Are you sure want to cancel DO @item.Id.ToString("0000000000")? The canceled delivery order will unable to edit in the future.">
                                                         <i class="bi bi-clipboard-x-fill"></i> Cancel
                                                     </button>
                                             }
                                             else
                                             {
-                                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#cancelModal" id="cancelButton" data-id="@item.Id"
+                                                    <button type="button" class="btn btn-danger btn-sm cancelButton" data-bs-toggle="modal"
+                                                data-bs-target="#cancelModal" data-id="@item.Id"
                                                 data-val="Are you sure want to cancel DO @item.Id.ToString("0000000000")? The canceled delivery order will unable to edit in the future.">
                                                         <i class="bi bi-clipboard-x-fill"></i> Cancel
                                                     </button>
@@ -154,12 +154,11 @@
 
 <script>
     $(document).ready(function () {
-        $('#cancelButton').on('click', function (event) {
-            var message = $('#cancelButton').data('val');
-            console.log(message);
+        $('.cancelButton').on('click', function (event) {
+            var message = $(this).data('val');
             $("#modal-body").text(message);
 
-            var id = $('#cancelButton').data('id');
+            var id = $(this).data('id');
             $("#hiddenId").val(id);
 
             $('#confirmCancel').attr('formaction', '/dOrders/Cancel/' + id);

@@ -35,7 +35,7 @@
 
                 <!-- Dorders ID -->
                 <h3 style="font-weight: bold;" class="pb-3" id="IdShown">
-                    Delivery Order ID: DO
+                    Delivery Order ID: DO @ViewBag.NewDOrderId
                 </h3>
                 <input type="hidden" id="Id" value="@ViewBag.NewDOrdersId" />
                 <div class="row pb-3">
@@ -394,10 +394,6 @@
             }
         })
 
-        //set quotation id on the view page
-        var IdFromViewBag = '@ViewBag.NewDOrdersId';
-        IdShown = String(IdFromViewBag).padStart(10, '0');
-        $('#IdShown').append(IdShown);
 
     });
 

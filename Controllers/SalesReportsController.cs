@@ -23,16 +23,18 @@ namespace FSMS_asp.net.Controllers
                 EndDate = null,
                 Invoices = null
             };
-
+            //return sales report page
             return View(model);
         }
 
         [HttpGet]
         public async Task<ActionResult> Generate(DateTime startDate, DateTime endDate)
         {
+            //find all invoice between the start date and end date
             var invoices = await _context.InvoicesModel!.Where(x => x.Date >= startDate && x.Date <= endDate).ToListAsync();
             Decimal totalAmount = 0;
 
+            //include all the invoice in the model
             SalesReportViewModel model = new SalesReportViewModel
             {
                 StartDate = startDate,
@@ -40,15 +42,18 @@ namespace FSMS_asp.net.Controllers
                 Invoices = invoices
             };
 
+            //calculate the total amount of the sales report
             foreach (var item in invoices)
             {
                 totalAmount += item.TotalAmount;
             }
 
+            //set the total amount, start date and end date of the sales report
             ViewBag.totalAmount = totalAmount.ToString("0.00");
             ViewBag.startDate = startDate.ToString("dd/MM/yyyy");
             ViewBag.endDate = endDate.ToString("dd/MM/yyyy");
 
+            //return the partial view 
             return PartialView("_salesReport", model);
         }
     }

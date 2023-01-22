@@ -20,8 +20,10 @@ namespace FSMS_asp.net.Controllers
         // GET: Invoices
         public async Task<IActionResult> Index()
         {
+            //get all data of invoice
             var model = await _context.InvoicesModel.ToListAsync();
 
+            //return view with data of invoice
             return _context.InvoicesModel != null ?
                         View(model) :
                         Problem("Entity set 'ApplicationDbContext.InvoicesModel'  is null.");
@@ -30,18 +32,16 @@ namespace FSMS_asp.net.Controllers
         // GET: Invoices/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.InvoicesModel == null)
-            {
-                return NotFound();
-            }
-
+            //find the specific invoice by using id
             var invoicesModel = await _context.InvoicesModel.Where(x => x.Id == id).FirstOrDefaultAsync();
 
+            //if specific invoice not found then return not found page
             if (invoicesModel == null)
             {
                 return NotFound();
             }
 
+            //include all invoice data in a model
             var invoicesViewModel = new InvoicesViewModel
             {
                 Id = invoicesModel.Id,
@@ -59,20 +59,21 @@ namespace FSMS_asp.net.Controllers
                 CancelStatus = invoicesModel.CancelStatus,
             };
 
+            //return invoice data with invoice detail page
             return View(invoicesViewModel);
         }
 
         // GET: Invoices/Create
         public async Task<IActionResult> Create()
         {
-            
+            //get all customer name (for dropdown in invoice)
             ViewBag.Customers = _context.CustomersModel.ToList().Select(x => new SelectListItem()
             {
                 Text = x.Name,
                 Value = x.Id.ToString()
             }).ToList();
 
-            
+            //get all product name (for dropdown in invoice)
             ViewBag.Products = _context.ProductsModel.ToList().Select(x => new SelectListItem()
             {
                 Text = x.Name,
@@ -80,23 +81,24 @@ namespace FSMS_asp.net.Controllers
             }).ToList();
 
             int NewInvoiceId = 0;
-
+            //set the id of invoice (use to show the current invoice id in the page)
             try
             {
                 NewInvoiceId = await _context.InvoicesModel.MaxAsync(x => x.Id) + 1;
-                NewInvoiceId.ToString("0000000000");
-                ViewBag.NewInvoiceId = NewInvoiceId;
+                ViewBag.NewInvoiceId = NewInvoiceId.ToString("0000000000"); ;
             }
             catch
             {
                 ViewBag.NewInvoiceId = "0000000000";
             }
 
+            //include all products data in the model
             InvoicesViewModel invoicesViewModel = new InvoicesViewModel
             {
                 Products = await _context.ProductsModel.ToListAsync()
             };
 
+            //return all products and customer data to the create invoice view 
             return View(invoicesViewModel);
         }
 
@@ -108,6 +110,7 @@ namespace FSMS_asp.net.Controllers
                 var ProductsData = await _context.ProductsModel.ToListAsync();
                 var NewInvoiceNumber = await _context.InvoicesModel.MaxAsync(x => x.Id);
 
+                //add each invoice detail into the database
                 foreach (var InvoiceDetail in InvoiceDetails)
                 {
                     InvoiceDetailsModel newDetails = new InvoiceDetailsModel
@@ -145,10 +148,13 @@ namespace FSMS_asp.net.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(InvoicesViewModel model)
         {
+            //if model state is valid
             if (ModelState.IsValid)
             {
+                //get the data of the customer chosen in the invoice
                 var Customer = _context.CustomersModel.Where(x => x.Id == model.CustomersId).FirstOrDefault();
 
+                //assign the information of invoice into a model
                 InvoicesModel Invoice = new InvoicesModel
                 {
                     Id = model.Id,
@@ -163,42 +169,45 @@ namespace FSMS_asp.net.Controllers
                     RefNo = model.RefNo,
                     PoNo = model.PoNo
                 };
-
+                //add all data of invoice into the database
                 _context.Add(Invoice);
                 await _context.SaveChangesAsync();
 
+                //add all invoice detail into database
                 await AddInvoiceDetail(JsonConvert.DeserializeObject<List<InvoiceDetailPost>>(model.InvoiceDetailsJson));
+                //redirect back to invoice index page
                 return RedirectToAction(nameof(Index));
             }
+            //return submitted data to create invoice page
             return View(model);
         }
 
         // GET: Invoices/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.InvoicesModel == null)
-            {
-                return NotFound();
-            }
-
+            //find specific invoice by using id
             var invoicesModel = await _context.InvoicesModel.FindAsync(id);
+            //if invoice not found then return invoice not found page
             if (invoicesModel == null)
             {
                 return NotFound();
             }
 
+            //get all customer name (for dropdown in invoice)
             ViewBag.Customers = _context.CustomersModel.ToList().Select(x => new SelectListItem()
             {
                 Text = x.Name,
                 Value = x.Id.ToString()
             }).ToList();
 
+            //get all products name (for dropdown in invoice)
             ViewBag.Products = _context.ProductsModel.ToList().Select(x => new SelectListItem()
             {
                 Text = x.Name,
                 Value = x.Id.ToString()
             }).ToList();
 
+            //include all data of invoice in a model
             var invoicesViewModel = new InvoicesViewModel
             {
                 Id = invoicesModel.Id,
@@ -214,9 +223,10 @@ namespace FSMS_asp.net.Controllers
                 Products = await _context.ProductsModel.ToListAsync(),
                 InvoiceDetails = await _context.InvoiceDetailsModel.Where(x => x.InvoiceId == id).ToListAsync()
             };
-
+            //set the id of the invoice
             ViewBag.InvoiceId = id?.ToString("0000000000") ?? "-";
 
+            //return view with data of invoice
             return View(invoicesViewModel);
         }
 
@@ -227,15 +237,13 @@ namespace FSMS_asp.net.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, InvoicesViewModel model)
         {
-            if (id != model.Id)
-            {
-                return NotFound();
-            }
-
+            //if model state is valid
             if (ModelState.IsValid)
             {
+                //get the customer of the invoice
                 var Customer = _context.CustomersModel.Where(x => x.Id == model.CustomersId).FirstOrDefault();
 
+                //put all information into a model
                 InvoicesModel Invoice = new InvoicesModel
                 {
                     Id = model.Id,
@@ -251,42 +259,46 @@ namespace FSMS_asp.net.Controllers
                     PoNo = model.PoNo
                 };
 
+                //update the invoice
                 _context.Update(Invoice);
                 await _context.SaveChangesAsync();
-
+                //remove all invoice detail
                 await RemoveInvoiceDetail(id);
                 try
                 {
+                    //add all invoice detail into database
                     await AddInvoiceDetail(JsonConvert.DeserializeObject<List<InvoiceDetailPost>>(model.InvoiceDetailsJson));
                 }
                 catch
                 {
 
                 }
+                //redirect to invoice index page
                 return RedirectToAction(nameof(Index));
             }
+            //return all submitted data to edit invoice page
             return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> Cancel(int? id)
         {
-            if (id == null || _context.InvoicesModel == null)
-            {
-                return NotFound();
-            }
-
+            //find the specific invoice by using id
             var invoicesModel = await _context.InvoicesModel
                 .FirstOrDefaultAsync(m => m.Id == id);
+            //if invoice not found then return invoice not found page
             if (invoicesModel == null)
             {
                 return NotFound();
             }
 
+            //set invoice cancel status to true
             invoicesModel.CancelStatus = true;
+            //update the specific invoice
             _context.InvoicesModel.Update(invoicesModel);
             await _context.SaveChangesAsync();
 
+            //redirect to invoice index page
             return Redirect("/invoices/index"); ;
         }
     }
