@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FSMS_asp.net.Data;
-using Microsoft.AspNetCore.Hosting;
 using FSMS_asp.net.Models;
+using System.Security.Claims;
 
 namespace FSMS_asp.net.Controllers
 {
@@ -34,10 +29,6 @@ namespace FSMS_asp.net.Controllers
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.ProductsModel == null)
-            {
-                return NotFound();
-            }
             //find specific products by using id
             var productsModel = await _context.ProductsModel
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -76,7 +67,8 @@ namespace FSMS_asp.net.Controllers
                     Quantity = model.Quantity,
                     Description = model.Description,
                     UpdatedAt = DateTime.Now,
-                    Image = uniqueFileName
+                    Image = uniqueFileName,
+                    UpdatedBy = User.FindFirstValue(ClaimTypes.Name)
                 };
 
                 //add the products into database
@@ -92,12 +84,9 @@ namespace FSMS_asp.net.Controllers
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.ProductsModel == null)
-            {
-                return NotFound();
-            }
             //find specific product in database by using id
             var productsModel = await _context.ProductsModel.FindAsync(id);
+            //if found no product then return not found page
             if (productsModel == null)
             {
                 return NotFound();
@@ -113,11 +102,7 @@ namespace FSMS_asp.net.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ProductsViewModel model)
         {
-            if (id != model.Id)
-            {
-                return NotFound();
-            }
-
+            //if model state is valid
             if (ModelState.IsValid)
             {
                 //try to update specific product with submitted data
@@ -129,6 +114,7 @@ namespace FSMS_asp.net.Controllers
                     product.Quantity = model.Quantity;
                     product.Description = model.Description;
                     product.UpdatedAt = DateTime.Now;
+                    product.UpdatedBy = User.FindFirstValue(ClaimTypes.Name);
                     //if product image is not null
                     if (model.Image != null )
                     {
@@ -168,10 +154,6 @@ namespace FSMS_asp.net.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.ProductsModel == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.ProductsModel'  is null.");
-            }
             //find specific product by using id
             var productsModel = await _context.ProductsModel.FindAsync(id);
             if (productsModel != null)

@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FSMS_asp.net.Models
 {
+    [Table("Products")]
     public class ProductsModel
     {
         [Key]
@@ -31,5 +32,7 @@ namespace FSMS_asp.net.Models
 
         [Display(Name = "Choose the image of your product.")]
         public string? Image { get; set; }
+
+        public string? UpdatedBy { get; set; }
     }
 }

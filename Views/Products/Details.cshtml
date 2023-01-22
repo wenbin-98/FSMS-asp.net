@@ -113,6 +113,23 @@
                         </td>
                     </tr>
 
+                    <!-- Product Created By -->
+                    <tr>
+                        <th scope="row">Product Created By:</th>
+                        <td>
+                            @{
+                                if (Model.Name == null)
+                                {
+                                    <p>There is an error in the application.</p>
+                                }
+                                else
+                                {
+                                    <p>@Model.UpdatedBy</p>
+                                }
+                            }
+                        </td>
+                    </tr>
+
                     <!-- Product Updated Timestamp -->
                     <tr>
                         <th scope="row">Last Updated at:</th>
