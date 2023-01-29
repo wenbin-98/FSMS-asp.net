@@ -1,8 +1,41 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+    var data = ViewData.Model;
+    var obj = ViewBag.data;
+
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h3>Last 6 months sales</h3>
+    <div class="row justify-content-center">
+        <div class="col-8">
+            <canvas id="acquisitions"></canvas>
+        </div>
+    </div>
+    <div style="width: 800px;"></div>
+
 </div>
+
+@section Scripts {
+    <script>
+        (async function () {
+            const data = @Html.Raw(obj);
+
+            new Chart(
+                document.getElementById('acquisitions'),
+                {
+                    type: 'bar',
+                    data: {
+                        labels: data.map(row => row.Year),
+                        datasets: [
+                            {
+                                label: 'Sales by Month',
+                                data: data.map(row => row.Sales)
+                            }
+                        ]
+                    }
+                }
+            );
+        })();
+    </script>
+}
